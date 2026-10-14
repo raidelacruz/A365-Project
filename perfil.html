@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil de Usuario | IMPULSA A365</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <!-- Estilos Custom -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <div class="app-wrapper">
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <a href="dashboard.html" class="sidebar-brand">
+        <div class="brand-badge">A365</div>
+        <div class="brand-info">
+          <span class="brand-title">IMPULSA A365</span>
+          <span class="brand-subtitle">Help Desk & CRM</span>
+        </div>
+      </a>
+
+      <ul class="sidebar-menu">
+        <li class="nav-item">
+          <a href="dashboard.html" class="nav-link">
+            <i class="bi bi-grid-1x2-fill"></i>
+            <span>Inicio</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="tickets.html" class="nav-link">
+            <i class="bi bi-ticket-detailed-fill"></i>
+            <span>Tickets</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="incidencias.html" class="nav-link">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span>Incidencias</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="reportes.html" class="nav-link">
+            <i class="bi bi-bar-chart-line-fill"></i>
+            <span>Reportes</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="usuarios.html" class="nav-link">
+            <i class="bi bi-people-fill"></i>
+            <span>Registro de usuarios</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="perfil.html" class="nav-link active">
+            <i class="bi bi-person-circle"></i>
+            <span>Perfil</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="configuracion.html" class="nav-link">
+            <i class="bi bi-gear-fill"></i>
+            <span>Configuración</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <div>IMPULSA A365 &copy; 2026</div>
+        <small class="text-secondary">v2.4 - UTP Integrador</small>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+      <!-- TOP NAVBAR -->
+      <header class="top-navbar">
+        <div class="navbar-left">
+          <button class="sidebar-toggle-btn" id="sidebarToggleBtn">
+            <i class="bi bi-list"></i>
+          </button>
+          <div>
+            <h1 class="page-header-title">Perfil de Usuario</h1>
+            <small class="text-muted d-none d-sm-inline">Gestión de datos de la cuenta activa</small>
+          </div>
+        </div>
+
+        <div class="navbar-right">
+          <button class="notification-btn" type="button" data-bs-toggle="dropdown">
+            <i class="bi bi-bell"></i>
+            <span class="notification-badge">3</span>
+          </button>
+
+          <a href="perfil.html" class="user-profile-badge">
+            <div class="avatar-circle">GG</div>
+            <div class="user-meta d-none d-md-flex">
+              <span class="user-name">Grace Galán</span>
+              <span class="user-role">Administradora</span>
+            </div>
+          </a>
+
+          <a href="login.html" class="btn-logout">
+            <i class="bi bi-box-arrow-right"></i>
+            <span class="d-none d-sm-inline">Cerrar sesión</span>
+          </a>
+        </div>
+      </header>
+
+      <!-- CUERPO DE PÁGINA -->
+      <main class="page-body">
+        
+        <div class="row justify-content-center">
+          <div class="col-12 col-lg-8 col-xl-7">
+            
+            <div class="card-custom mb-0">
+              <!-- Banner Azul Superior (Figma) -->
+              <div class="profile-cover">
+                <div class="profile-avatar-wrap">
+                  <div class="position-relative d-inline-block">
+                    <div class="avatar-circle avatar-lg">GG</div>
+                    <button type="button" class="btn btn-sm btn-light border position-absolute bottom-0 end-0 rounded-circle p-1 shadow-sm" title="Cambiar fotografía" onclick="showToast('Selección de fotografía habilitada');">
+                      <i class="bi bi-camera-fill text-muted" style="font-size: 0.85rem;"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Formulario del Perfil (Figma Screen) -->
+              <div class="profile-content">
+                <div class="mb-4">
+                  <h4 class="fw-bold text-dark mb-0">Grace Galán</h4>
+                  <span class="badge bg-primary bg-opacity-10 text-primary fw-semibold">Administradora de Plataforma</span>
+                </div>
+
+                <form id="perfilForm">
+                  <!-- Campo Nombre Completo -->
+                  <div class="mb-3">
+                    <label for="profNombre" class="form-label small fw-bold text-secondary text-uppercase">Nombre Completo</label>
+                    <input type="text" class="form-control" id="profNombre" value="Grace Galán" required>
+                  </div>
+
+                  <!-- Campo Correo Electrónico -->
+                  <div class="mb-3">
+                    <label for="profEmail" class="form-label small fw-bold text-secondary text-uppercase">Correo Electrónico</label>
+                    <input type="email" class="form-control" id="profEmail" value="g.galan@impulsa365.com" required>
+                  </div>
+
+                  <!-- Campo Número de Celular -->
+                  <div class="mb-3">
+                    <label for="profCelular" class="form-label small fw-bold text-secondary text-uppercase">Número de Celular</label>
+                    <input type="text" class="form-control" id="profCelular" value="+51 987 123 456" required>
+                  </div>
+
+                  <!-- Campo Dirección -->
+                  <div class="mb-3">
+                    <label for="profDireccion" class="form-label small fw-bold text-secondary text-uppercase">Dirección</label>
+                    <input type="text" class="form-control" id="profDireccion" value="Av. Javier Prado Este 1234, San Isidro, Lima" required>
+                  </div>
+
+                  <!-- Campo DNI -->
+                  <div class="mb-4">
+                    <label for="profDni" class="form-label small fw-bold text-secondary text-uppercase">DNI / Documento de Identidad</label>
+                    <input type="text" class="form-control" id="profDni" value="45678901" required>
+                  </div>
+
+                  <!-- Botones de Acción (Figma) -->
+                  <div class="d-flex align-items-center gap-3 pt-2 border-top">
+                    <button type="submit" class="btn btn-primary px-4 fw-semibold" style="background-color: var(--primary-accent); border-color: var(--primary-accent);">
+                      Actualizar perfil
+                    </button>
+                    <a href="dashboard.html" class="btn btn-outline-secondary px-4">
+                      Cancelar
+                    </a>
+                  </div>
+                </form>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

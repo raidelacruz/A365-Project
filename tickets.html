@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Tickets | IMPULSA A365</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <!-- Estilos Custom -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <div class="app-wrapper">
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <a href="dashboard.html" class="sidebar-brand">
+        <div class="brand-badge">A365</div>
+        <div class="brand-info">
+          <span class="brand-title">IMPULSA A365</span>
+          <span class="brand-subtitle">Help Desk & CRM</span>
+        </div>
+      </a>
+
+      <ul class="sidebar-menu">
+        <li class="nav-item">
+          <a href="dashboard.html" class="nav-link">
+            <i class="bi bi-grid-1x2-fill"></i>
+            <span>Inicio</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="tickets.html" class="nav-link active">
+            <i class="bi bi-ticket-detailed-fill"></i>
+            <span>Tickets</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="incidencias.html" class="nav-link">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span>Incidencias</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="reportes.html" class="nav-link">
+            <i class="bi bi-bar-chart-line-fill"></i>
+            <span>Reportes</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="usuarios.html" class="nav-link">
+            <i class="bi bi-people-fill"></i>
+            <span>Registro de usuarios</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="perfil.html" class="nav-link">
+            <i class="bi bi-person-circle"></i>
+            <span>Perfil</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="configuracion.html" class="nav-link">
+            <i class="bi bi-gear-fill"></i>
+            <span>Configuración</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <div>IMPULSA A365 &copy; 2026</div>
+        <small class="text-secondary">v2.4 - UTP Integrador</small>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+      <!-- TOP NAVBAR -->
+      <header class="top-navbar">
+        <div class="navbar-left">
+          <button class="sidebar-toggle-btn" id="sidebarToggleBtn">
+            <i class="bi bi-list"></i>
+          </button>
+          <div>
+            <h1 class="page-header-title">Gestión de Tickets</h1>
+            <small class="text-muted d-none d-sm-inline">Administra y da seguimiento a las solicitudes de soporte</small>
+          </div>
+        </div>
+
+        <div class="navbar-right">
+          <button class="notification-btn" type="button" data-bs-toggle="dropdown">
+            <i class="bi bi-bell"></i>
+            <span class="notification-badge">3</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 p-2">
+            <li class="dropdown-header fw-bold text-dark border-bottom pb-2">Notificaciones</li>
+            <li><a class="dropdown-item py-2 small" href="#"><i class="bi bi-info-circle text-primary me-2"></i> Nuevo ticket asignado</a></li>
+          </ul>
+
+          <a href="perfil.html" class="user-profile-badge">
+            <div class="avatar-circle">GG</div>
+            <div class="user-meta d-none d-md-flex">
+              <span class="user-name">Grace Galán</span>
+              <span class="user-role">Administradora</span>
+            </div>
+          </a>
+
+          <a href="login.html" class="btn-logout">
+            <i class="bi bi-box-arrow-right"></i>
+            <span class="d-none d-sm-inline">Cerrar sesión</span>
+          </a>
+        </div>
+      </header>
+
+      <!-- CUERPO DE PÁGINA -->
+      <main class="page-body">
+        
+        <!-- HEADER DE SECCIÓN CON BOTÓN NUEVO TICKET -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+          <div>
+            <h4 class="fw-bold mb-1">Mesa de Ayuda</h4>
+            <p class="text-muted small mb-0">Control del ciclo de vida y resolución de requerimientos corporativos</p>
+          </div>
+          <button class="btn btn-primary d-flex align-items-center gap-2 fw-semibold shadow-sm" data-bs-toggle="modal" data-bs-target="#nuevoTicketModal" style="background-color: var(--primary-color); border-color: var(--primary-color);">
+            <i class="bi bi-plus-lg"></i>
+            <span>Nuevo ticket</span>
+          </button>
+        </div>
+
+        <!-- FILTRO Y BÚSQUEDA (FIGMA) -->
+        <div class="card-custom mb-4">
+          <div class="card-custom-body p-3">
+            <div class="row g-2 align-items-center">
+              <div class="col-12 col-md-7 col-lg-8">
+                <div class="input-group">
+                  <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                  <input type="text" id="searchTicketInput" class="form-control border-start-0 ps-0" placeholder="Buscar por código (#TK-001), cliente o motivo...">
+                </div>
+              </div>
+              <div class="col-12 col-md-5 col-lg-4">
+                <div class="input-group">
+                  <span class="input-group-text bg-light text-muted small"><i class="bi bi-funnel"></i></span>
+                  <select class="form-select text-secondary" id="filterPrioritySelect">
+                    <option value="todas">Filtros: Todas las prioridades</option>
+                    <option value="alta">Prioridad Alta</option>
+                    <option value="media">Prioridad Media</option>
+                    <option value="baja">Prioridad Baja</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PESTAÑAS DE ESTADO (TABS) -->
+        <ul class="nav nav-pills mb-3 gap-2" id="ticketsTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active rounded-pill px-3 py-2 small fw-semibold" id="pendientes-tab" data-bs-toggle="pill" data-bs-target="#pendientes-pane" type="button" role="tab">
+              Pendientes <span class="badge bg-danger ms-1">3</span>
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link rounded-pill px-3 py-2 small fw-semibold" id="completados-tab" data-bs-toggle="pill" data-bs-target="#completados-pane" type="button" role="tab">
+              Pendientes completados <span class="badge bg-secondary ms-1">89</span>
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link rounded-pill px-3 py-2 small fw-semibold" id="cancelados-tab" data-bs-toggle="pill" data-bs-target="#cancelados-pane" type="button" role="tab">
+              Pendientes cancelados <span class="badge bg-secondary ms-1">7</span>
+            </button>
+          </li>
+        </ul>
+
+        <!-- CONTENIDO DE LAS PESTAÑAS -->
+        <div class="tab-content" id="ticketsTabContent">
+          <!-- TAB PENDIENTES (FIGMA SCREEN) -->
+          <div class="tab-pane fade show active" id="pendientes-pane" role="tabpanel">
+            <div class="d-flex flex-column gap-3" id="ticketsListContainer">
+              
+              <!-- TICKET ITEM 1 -->
+              <div class="card-custom mb-0 ticket-card" data-priority="alta" data-search="tk-2026-001 error al cargar modulo de reportes carlos mendoza tecnologia">
+                <div class="card-custom-body p-3 p-md-4">
+                  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                    <div class="d-flex align-items-start gap-3">
+                      <div class="avatar-circle" style="background: #fee2e2; color: #dc2626; width: 44px; height: 44px; font-size: 1.2rem;">
+                        <i class="bi bi-exclamation-triangle"></i>
+                      </div>
+                      <div>
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                          <span class="badge bg-light text-secondary border fw-bold">#TK-2026-001</span>
+                          <span class="small text-muted fw-semibold">Tecnología / Software</span>
+                        </div>
+                        <h6 class="fw-bold text-dark mb-1">Error al cargar módulo de reportes</h6>
+                        <div class="text-muted small">
+                          <span>Solicitado por: <strong>Carlos Mendoza</strong></span>
+                          <span class="mx-1">•</span>
+                          <span>2026-09-23 09:15</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-3">
+                      <span class="badge-priority-alta">Alta</span>
+                      <span class="badge-status-proceso">En proceso</span>
+                      <button class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#detalleTicketModal" onclick="cargarDetalleTicket('TK-2026-001', 'Error al cargar módulo de reportes', 'Alta', 'En proceso', 'Carlos Mendoza')">
+                        <i class="bi bi-chat-left-text"></i>
+                        <span>Detalles</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- TICKET ITEM 2 -->
+              <div class="card-custom mb-0 ticket-card" data-priority="alta" data-search="tk-2026-002 factura pendiente de aprobacion roberto salas finanzas">
+                <div class="card-custom-body p-3 p-md-4">
+                  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                    <div class="d-flex align-items-start gap-3">
+                      <div class="avatar-circle" style="background: #fee2e2; color: #dc2626; width: 44px; height: 44px; font-size: 1.2rem;">
+                        <i class="bi bi-receipt"></i>
+                      </div>
+                      <div>
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                          <span class="badge bg-light text-secondary border fw-bold">#TK-2026-002</span>
+                          <span class="small text-muted fw-semibold">Finanzas / Facturación</span>
+                        </div>
+                        <h6 class="fw-bold text-dark mb-1">Factura pendiente de aprobación</h6>
+                        <div class="text-muted small">
+                          <span>Solicitado por: <strong>Roberto Salas</strong></span>
+                          <span class="mx-1">•</span>
+                          <span>2026-09-21 14:00</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-3">
+                      <span class="badge-priority-alta">Alta</span>
+                      <span class="badge-status-proceso">En proceso</span>
+                      <button class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#detalleTicketModal" onclick="cargarDetalleTicket('TK-2026-002', 'Factura pendiente de aprobación', 'Alta', 'En proceso', 'Roberto Salas')">
+                        <i class="bi bi-chat-left-text"></i>
+                        <span>Detalles</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- TICKET ITEM 3 -->
+              <div class="card-custom mb-0 ticket-card" data-priority="media" data-search="tk-2026-003 restablecer credenciales vpn lucia torres sistemas redes">
+                <div class="card-custom-body p-3 p-md-4">
+                  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                    <div class="d-flex align-items-start gap-3">
+                      <div class="avatar-circle" style="background: #fef3c7; color: #d97706; width: 44px; height: 44px; font-size: 1.2rem;">
+                        <i class="bi bi-shield-lock"></i>
+                      </div>
+                      <div>
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                          <span class="badge bg-light text-secondary border fw-bold">#TK-2026-003</span>
+                          <span class="small text-muted fw-semibold">Redes & Conectividad</span>
+                        </div>
+                        <h6 class="fw-bold text-dark mb-1">Restablecer credenciales VPN de acceso remoto</h6>
+                        <div class="text-muted small">
+                          <span>Solicitado por: <strong>Lucía Torres</strong></span>
+                          <span class="mx-1">•</span>
+                          <span>2026-09-20 16:30</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-3">
+                      <span class="badge-priority-media">Media</span>
+                      <span class="badge-status-pendiente">Abierto</span>
+                      <button class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#detalleTicketModal" onclick="cargarDetalleTicket('TK-2026-003', 'Restablecer credenciales VPN de acceso remoto', 'Media', 'Abierto', 'Lucía Torres')">
+                        <i class="bi bi-chat-left-text"></i>
+                        <span>Detalles</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- TAB COMPLETADOS -->
+          <div class="tab-pane fade" id="completados-pane" role="tabpanel">
+            <div class="card-custom text-center py-5">
+              <i class="bi bi-check-circle text-success fs-1 mb-2"></i>
+              <h5>89 Tickets Completados y Resueltos</h5>
+              <p class="text-muted small">Los tickets cerrados satisfacen el acuerdo de nivel de servicio (SLA).</p>
+            </div>
+          </div>
+
+          <!-- TAB CANCELADOS -->
+          <div class="tab-pane fade" id="cancelados-pane" role="tabpanel">
+            <div class="card-custom text-center py-5">
+              <i class="bi bi-x-circle text-danger fs-1 mb-2"></i>
+              <h5>7 Tickets Cancelados</h5>
+              <p class="text-muted small">Solicitudes duplicadas o desestimadas por el usuario.</p>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- MODAL: NUEVO TICKET (WIREFRAME FIGMA PÁG. 91) -->
+  <div class="modal fade" id="nuevoTicketModal" tabindex="-1" aria-labelledby="nuevoTicketModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg rounded-4">
+        <div class="modal-header bg-light">
+          <h5 class="modal-title fw-bold" id="nuevoTicketModalLabel"><i class="bi bi-plus-circle text-primary me-2"></i>Crear Nuevo Ticket</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="nuevoTicketForm">
+          <div class="modal-body p-4">
+            <div class="mb-3">
+              <label for="ticketTitulo" class="form-label small fw-bold text-secondary">TÍTULO / ASUNTO</label>
+              <input type="text" class="form-control" id="ticketTitulo" placeholder="Ej. Falla al emitir comprobante..." required>
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-md-6">
+                <label for="ticketCategoria" class="form-label small fw-bold text-secondary">CATEGORÍA</label>
+                <select class="form-select" id="ticketCategoria" required>
+                  <option value="" disabled selected>Seleccione...</option>
+                  <option value="1">Software y Aplicativos</option>
+                  <option value="2">Hardware y Equipos</option>
+                  <option value="3">Redes y VPN</option>
+                  <option value="4">Accesos y Contraseñas</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label for="ticketPrioridad" class="form-label small fw-bold text-secondary">NIVEL DE URGENCIA</label>
+                <select class="form-select" id="ticketPrioridad" required>
+                  <option value="Alta">Alta (Urgente)</option>
+                  <option value="Media" selected>Media</option>
+                  <option value="Baja">Baja</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="ticketDescripcion" class="form-label small fw-bold text-secondary">DESCRIPCIÓN DE LA INCIDENCIA</label>
+              <textarea class="form-control" id="ticketDescripcion" rows="4" placeholder="Explica detalladamente el problema observado..." required></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label for="ticketAdjunto" class="form-label small fw-bold text-secondary">ADJUNTAR ARCHIVOS / CAPTURAS</label>
+              <input class="form-control" type="file" id="ticketAdjunto">
+              <div class="form-text small">Formatos permitidos: PNG, JPG, PDF (máx. 10MB).</div>
+            </div>
+          </div>
+          <div class="modal-footer bg-light">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary fw-semibold" style="background-color: var(--primary-color); border-color: var(--primary-color);">Enviar Ticket</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: DETALLE DE TICKET Y CHAT DE SOPORTE -->
+  <div class="modal fade" id="detalleTicketModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg rounded-4">
+        <div class="modal-header bg-light">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-primary" id="modalTicketCode">#TK-2026-001</span>
+            <h5 class="modal-title fw-bold text-dark mb-0" id="modalTicketTitle">Error al cargar módulo de reportes</h5>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <div class="row g-3 mb-4">
+            <div class="col-sm-4">
+              <small class="text-muted d-block">Solicitante</small>
+              <strong id="modalTicketUser">Carlos Mendoza</strong>
+            </div>
+            <div class="col-sm-4">
+              <small class="text-muted d-block">Prioridad</small>
+              <span id="modalTicketPriority" class="badge-priority-alta">Alta</span>
+            </div>
+            <div class="col-sm-4">
+              <small class="text-muted d-block">Estado Actual</small>
+              <span id="modalTicketStatus" class="badge-status-proceso">En proceso</span>
+            </div>
+          </div>
+
+          <!-- Historial de mensajes y notas (RF09) -->
+          <h6 class="fw-bold mb-3 border-bottom pb-2">Hilo de Comunicación y Notas Técnicas</h6>
+          <div class="p-3 bg-light rounded-3 mb-3" style="max-height: 220px; overflow-y: auto;">
+            <div class="mb-3">
+              <div class="d-flex justify-content-between small text-muted mb-1">
+                <strong>Carlos Mendoza (Usuario)</strong>
+                <span>2026-09-23 09:15</span>
+              </div>
+              <p class="small bg-white p-2 rounded border mb-0">Al ingresar a la opción de Reportes y pulsar exportar, la vista queda en blanco y no genera el archivo.</p>
+            </div>
+            <div class="mb-1">
+              <div class="d-flex justify-content-between small text-muted mb-1">
+                <strong>Franchis Obregón (Técnico de Soporte)</strong>
+                <span>2026-09-23 09:40</span>
+              </div>
+              <p class="small p-2 rounded border mb-0" style="background-color: #eff6ff; border-color: #bfdbfe !important;">Se ha identificado una excepción en la consulta SQL de consolidación. Procedemos con la optimización en el repositorio de datos.</p>
+            </div>
+          </div>
+
+          <!-- Formulario de respuesta rápida -->
+          <form onsubmit="event.preventDefault(); showToast('Nota agregada al ticket'); document.getElementById('chatReplyText').value='';">
+            <div class="input-group">
+              <input type="text" id="chatReplyText" class="form-control" placeholder="Escribir una actualización o respuesta...">
+              <button class="btn btn-primary" type="submit" style="background-color: var(--primary-color);">Responder</button>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer bg-light">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button type="button" class="btn btn-success fw-semibold" onclick="showToast('Estado actualizado a RESUELTO'); bootstrap.Modal.getInstance(document.getElementById('detalleTicketModal')).hide();">Marcar como Resuelto</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    // Filtro interactivo de búsqueda y prioridad
+    const searchInput = document.getElementById('searchTicketInput');
+    const prioritySelect = document.getElementById('filterPrioritySelect');
+    const ticketCards = document.querySelectorAll('.ticket-card');
+
+    function filterTickets() {
+      const term = searchInput.value.toLowerCase();
+      const priority = prioritySelect.value.toLowerCase();
+
+      ticketCards.forEach(card => {
+        const searchData = card.getAttribute('data-search') || '';
+        const cardPriority = card.getAttribute('data-priority') || '';
+
+        const matchesSearch = searchData.includes(term);
+        const matchesPriority = (priority === 'todas') || (cardPriority === priority);
+
+        if (matchesSearch && matchesPriority) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    if (searchInput) searchInput.addEventListener('input', filterTickets);
+    if (prioritySelect) prioritySelect.addEventListener('change', filterTickets);
+
+    function cargarDetalleTicket(codigo, titulo, prioridad, estado, usuario) {
+      document.getElementById('modalTicketCode').innerText = '#' + codigo;
+      document.getElementById('modalTicketTitle').innerText = titulo;
+      document.getElementById('modalTicketUser').innerText = usuario;
+      document.getElementById('modalTicketPriority').innerText = prioridad;
+      document.getElementById('modalTicketStatus').innerText = estado;
+    }
+  </script>
+</body>
+</html>

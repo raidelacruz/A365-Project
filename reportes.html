@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reportes y Analítica | IMPULSA A365</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Estilos Custom -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <div class="app-wrapper">
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <a href="dashboard.html" class="sidebar-brand">
+        <div class="brand-badge">A365</div>
+        <div class="brand-info">
+          <span class="brand-title">IMPULSA A365</span>
+          <span class="brand-subtitle">Help Desk & CRM</span>
+        </div>
+      </a>
+
+      <ul class="sidebar-menu">
+        <li class="nav-item">
+          <a href="dashboard.html" class="nav-link">
+            <i class="bi bi-grid-1x2-fill"></i>
+            <span>Inicio</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="tickets.html" class="nav-link">
+            <i class="bi bi-ticket-detailed-fill"></i>
+            <span>Tickets</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="incidencias.html" class="nav-link">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span>Incidencias</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="reportes.html" class="nav-link active">
+            <i class="bi bi-bar-chart-line-fill"></i>
+            <span>Reportes</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="usuarios.html" class="nav-link">
+            <i class="bi bi-people-fill"></i>
+            <span>Registro de usuarios</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="perfil.html" class="nav-link">
+            <i class="bi bi-person-circle"></i>
+            <span>Perfil</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="configuracion.html" class="nav-link">
+            <i class="bi bi-gear-fill"></i>
+            <span>Configuración</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <div>IMPULSA A365 &copy; 2026</div>
+        <small class="text-secondary">v2.4 - UTP Integrador</small>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+      <!-- TOP NAVBAR -->
+      <header class="top-navbar">
+        <div class="navbar-left">
+          <button class="sidebar-toggle-btn" id="sidebarToggleBtn">
+            <i class="bi bi-list"></i>
+          </button>
+          <div>
+            <h1 class="page-header-title">Reportes y Analítica</h1>
+            <small class="text-muted d-none d-sm-inline">Resumen de rendimiento del sistema — Período 2026</small>
+          </div>
+        </div>
+
+        <div class="navbar-right">
+          <button class="notification-btn" type="button" data-bs-toggle="dropdown">
+            <i class="bi bi-bell"></i>
+            <span class="notification-badge">3</span>
+          </button>
+
+          <a href="perfil.html" class="user-profile-badge">
+            <div class="avatar-circle">GG</div>
+            <div class="user-meta d-none d-md-flex">
+              <span class="user-name">Grace Galán</span>
+              <span class="user-role">Administradora</span>
+            </div>
+          </a>
+
+          <a href="login.html" class="btn-logout">
+            <i class="bi bi-box-arrow-right"></i>
+            <span class="d-none d-sm-inline">Cerrar sesión</span>
+          </a>
+        </div>
+      </header>
+
+      <!-- CUERPO DE PÁGINA -->
+      <main class="page-body">
+        
+        <!-- HEADER CON BOTÓN EXPORTAR (FIGMA) -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+          <div>
+            <h4 class="fw-bold mb-1">Métricas y KPIs Corporativos</h4>
+            <p class="text-muted small mb-0">Consolidado estadístico para gerencia y supervisión de SLAs</p>
+          </div>
+          <!-- Botón Exportar Reporte -->
+          <div class="dropdown">
+            <button class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2 fw-semibold shadow-sm bg-white" type="button" data-bs-toggle="dropdown">
+              <i class="bi bi-download"></i>
+              <span>Exportar Reporte (PDF / Excel)</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3">
+              <li>
+                <button class="dropdown-item py-2 small d-flex align-items-center gap-2" onclick="showToast('Generando reporte en formato PDF...');">
+                  <i class="bi bi-file-earmark-pdf text-danger fs-5"></i> Exportar como PDF (.pdf)
+                </button>
+              </li>
+              <li>
+                <button class="dropdown-item py-2 small d-flex align-items-center gap-2" onclick="showToast('Descargando archivo Excel consolidado...');">
+                  <i class="bi bi-file-earmark-spreadsheet text-success fs-5"></i> Exportar como Excel (.xlsx)
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- FILA DE 3 TARJETAS KPI (FIGMA SCREEN EXACTO) -->
+        <div class="row g-3 mb-4">
+          <!-- KPI 1: RESOLUCIÓN PROMEDIO -->
+          <div class="col-12 col-md-4">
+            <div class="card-custom mb-0 p-3 p-md-4">
+              <div class="small fw-semibold text-muted mb-1">Resolución promedio</div>
+              <div class="d-flex align-items-baseline gap-2 mb-2">
+                <span class="display-6 fw-bold text-dark">4.2h</span>
+                <span class="badge bg-success bg-opacity-10 text-success fw-bold small">
+                  <i class="bi bi-arrow-down-short"></i> -18% vs mes anterior
+                </span>
+              </div>
+              <div class="progress" style="height: 6px;">
+                <div class="progress-bar bg-primary" role="progressbar" style="width: 75%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- KPI 2: TICKETS POR AGENTE -->
+          <div class="col-12 col-md-4">
+            <div class="card-custom mb-0 p-3 p-md-4">
+              <div class="small fw-semibold text-muted mb-1">Tickets por agente</div>
+              <div class="d-flex align-items-baseline gap-2 mb-2">
+                <span class="display-6 fw-bold text-dark">12.5</span>
+                <span class="badge bg-success bg-opacity-10 text-success fw-bold small">
+                  <i class="bi bi-arrow-up-short"></i> +5% vs mes anterior
+                </span>
+              </div>
+              <div class="progress" style="height: 6px;">
+                <div class="progress-bar bg-success" role="progressbar" style="width: 65%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- KPI 3: CSAT SCORE -->
+          <div class="col-12 col-md-4">
+            <div class="card-custom mb-0 p-3 p-md-4">
+              <div class="small fw-semibold text-muted mb-1">Satisfacción del Cliente (CSAT)</div>
+              <div class="d-flex align-items-baseline gap-2 mb-2">
+                <span class="display-6 fw-bold text-dark">4.8/5</span>
+                <span class="badge bg-success bg-opacity-10 text-success fw-bold small">
+                  <i class="bi bi-star-fill text-warning me-1"></i> +0.2 vs mes anterior
+                </span>
+              </div>
+              <div class="progress" style="height: 6px;">
+                <div class="progress-bar bg-warning" role="progressbar" style="width: 96%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FILA DE GRÁFICOS (FIGMA MOCKUP) -->
+        <div class="row g-4 mb-4">
+          <!-- GRÁFICO 1: TICKETS POR MES -->
+          <div class="col-12 col-lg-7">
+            <div class="card-custom h-100 mb-0">
+              <div class="card-custom-header">
+                <h5 class="mb-0">Tickets por mes — 2026</h5>
+                <span class="small text-muted">Enero a Junio</span>
+              </div>
+              <div class="card-custom-body">
+                <canvas id="ticketsByMonthChart" style="max-height: 280px;"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- GRÁFICO 2: TIPOS DE TICKETS (%) -->
+          <div class="col-12 col-lg-5">
+            <div class="card-custom h-100 mb-0">
+              <div class="card-custom-header">
+                <h5 class="mb-0">Tipos de Tickets más solicitados (%)</h5>
+              </div>
+              <div class="card-custom-body">
+                <!-- Desglose Porcentual Exacto de Figma -->
+                <div class="mb-3">
+                  <div class="d-flex justify-content-between small fw-semibold mb-1">
+                    <span>Error de Software / Módulos</span>
+                    <strong class="text-primary">38%</strong>
+                  </div>
+                  <div class="progress" style="height: 8px;">
+                    <div class="progress-bar" style="width: 38%; background-color: #2563eb;"></div>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <div class="d-flex justify-content-between small fw-semibold mb-1">
+                    <span>Gestión de Permisos y Accesos</span>
+                    <strong style="color: #0d9488;">27%</strong>
+                  </div>
+                  <div class="progress" style="height: 8px;">
+                    <div class="progress-bar" style="width: 27%; background-color: #0d9488;"></div>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <div class="d-flex justify-content-between small fw-semibold mb-1">
+                    <span>Soporte VPN y Conectividad</span>
+                    <strong style="color: #ea580c;">16%</strong>
+                  </div>
+                  <div class="progress" style="height: 8px;">
+                    <div class="progress-bar" style="width: 16%; background-color: #ea580c;"></div>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <div class="d-flex justify-content-between small fw-semibold mb-1">
+                    <span>Facturación y Aprobaciones</span>
+                    <strong style="color: #7c3aed;">11%</strong>
+                  </div>
+                  <div class="progress" style="height: 8px;">
+                    <div class="progress-bar" style="width: 11%; background-color: #7c3aed;"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="d-flex justify-content-between small fw-semibold mb-1">
+                    <span>Soporte de Hardware</span>
+                    <strong style="color: #dc2626;">8%</strong>
+                  </div>
+                  <div class="progress" style="height: 8px;">
+                    <div class="progress-bar" style="width: 8%; background-color: #dc2626;"></div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TABLA DE REPORTES CLAVE (SECCIÓN 5.3.4 DEL AVANCE 2) -->
+        <div class="card-custom mb-0">
+          <div class="card-custom-header">
+            <h5 class="mb-0">Mapeo de Reportes Clave del Sistema</h5>
+            <span class="badge bg-light text-secondary border">Auditoría & Calidad</span>
+          </div>
+          <div class="card-custom-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0 small">
+                <thead class="table-light text-secondary">
+                  <tr>
+                    <th class="ps-3 py-3">ID</th>
+                    <th>NOMBRE DEL REPORTE</th>
+                    <th>PROCESO RELACIONADO</th>
+                    <th>FRECUENCIA</th>
+                    <th>PRIORIDAD</th>
+                    <th class="pe-3 text-end">ACCIONES</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="ps-3 fw-bold">R01</td>
+                    <td><strong>Reporte General de Tickets</strong></td>
+                    <td>Gestión de Mesa de Ayuda</td>
+                    <td>Diario</td>
+                    <td><span class="badge-priority-alta">Alta</span></td>
+                    <td class="pe-3 text-end">
+                      <button class="btn btn-sm btn-outline-primary" onclick="showToast('Generando vista previa del reporte R01');">Consultar</button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="ps-3 fw-bold">R02</td>
+                    <td><strong>Cumplimiento de Tiempos de Atención (SLA)</strong></td>
+                    <td>Monitoreo Operativo</td>
+                    <td>Semanal</td>
+                    <td><span class="badge-priority-alta">Alta</span></td>
+                    <td class="pe-3 text-end">
+                      <button class="btn btn-sm btn-outline-primary" onclick="showToast('Generando vista previa del reporte R02');">Consultar</button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="ps-3 fw-bold">R03</td>
+                    <td><strong>Rendimiento y Productividad por Técnico</strong></td>
+                    <td>Evaluación de Personal</td>
+                    <td>Quincenal</td>
+                    <td><span class="badge-priority-media">Media</span></td>
+                    <td class="pe-3 text-end">
+                      <button class="btn btn-sm btn-outline-primary" onclick="showToast('Generando vista previa del reporte R03');">Consultar</button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="ps-3 fw-bold">R04</td>
+                    <td><strong>Satisfacción del Cliente (CSAT)</strong></td>
+                    <td>Calidad de Servicio</td>
+                    <td>Mensual</td>
+                    <td><span class="badge-priority-alta">Alta</span></td>
+                    <td class="pe-3 text-end">
+                      <button class="btn btn-sm btn-outline-primary" onclick="showToast('Generando vista previa del reporte R04');">Consultar</button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="ps-3 fw-bold">R05</td>
+                    <td><strong>Auditoría y Trazabilidad Histórica</strong></td>
+                    <td>Seguridad y Control</td>
+                    <td>Mensual</td>
+                    <td><span class="badge-priority-baja">Baja</span></td>
+                    <td class="pe-3 text-end">
+                      <button class="btn btn-sm btn-outline-primary" onclick="showToast('Generando vista previa del reporte R05');">Consultar</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    // Gráfico de Barras Chart.js
+    const ctx = document.getElementById('ticketsByMonthChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+        datasets: [{
+          label: 'Tickets Atendidos',
+          data: [45, 62, 38, 75, 88, 110],
+          backgroundColor: [
+            '#94a3b8',
+            '#64748b',
+            '#94a3b8',
+            '#475569',
+            '#334155',
+            '#dc2626' // Barra de Junio destacada como en Figma
+          ],
+          borderRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: { color: '#f1f5f9' }
+          },
+          x: {
+            grid: { display: false }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
