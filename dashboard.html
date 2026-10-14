@@ -1,397 +1,544 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel Principal | IMPULSA A365</title>
-  <!-- Bootstrap 5 CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Bootstrap Icons -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-  <!-- Estilos Custom -->
-  <link rel="stylesheet" href="css/styles.css">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Panel Principal | IMPULSA A365</title>
+    <!-- Bootstrap 5 CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Bootstrap Icons -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    />
+    <!-- Estilos Custom -->
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div class="app-wrapper">
+      <!-- OVERLAY MOBILE -->
+      <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-  <div class="app-wrapper">
-    <!-- OVERLAY MOBILE -->
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+      <!-- SIDEBAR DE NAVEGACIÓN -->
+      <aside class="sidebar" id="sidebar">
+        <a href="dashboard.html" class="sidebar-brand">
+          <div class="brand-badge">A365</div>
+          <div class="brand-info">
+            <span class="brand-title">IMPULSA A365</span>
+            <span class="brand-subtitle">Help Desk & CRM</span>
+          </div>
+        </a>
 
-    <!-- SIDEBAR DE NAVEGACIÓN -->
-    <aside class="sidebar" id="sidebar">
-      <a href="dashboard.html" class="sidebar-brand">
-        <div class="brand-badge">A365</div>
-        <div class="brand-info">
-          <span class="brand-title">IMPULSA A365</span>
-          <span class="brand-subtitle">Help Desk & CRM</span>
+        <ul class="sidebar-menu">
+          <li class="nav-item">
+            <a href="dashboard.html" class="nav-link active">
+              <i class="bi bi-grid-1x2-fill"></i>
+              <span>Inicio</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="tickets.html" class="nav-link">
+              <i class="bi bi-ticket-detailed-fill"></i>
+              <span>Tickets</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="incidencias.html" class="nav-link">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+              <span>Incidencias</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="reportes.html" class="nav-link">
+              <i class="bi bi-bar-chart-line-fill"></i>
+              <span>Reportes</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="usuarios.html" class="nav-link">
+              <i class="bi bi-people-fill"></i>
+              <span>Registro de usuarios</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="perfil.html" class="nav-link">
+              <i class="bi bi-person-circle"></i>
+              <span>Perfil</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="configuracion.html" class="nav-link">
+              <i class="bi bi-gear-fill"></i>
+              <span>Configuración</span>
+            </a>
+          </li>
+        </ul>
+
+        <div class="sidebar-footer">
+          <div>IMPULSA A365 &copy; 2026</div>
+          <small class="text-secondary">v2.4 - UTP Integrador</small>
         </div>
-      </a>
+      </aside>
 
-      <ul class="sidebar-menu">
-        <li class="nav-item">
-          <a href="dashboard.html" class="nav-link active">
-            <i class="bi bi-grid-1x2-fill"></i>
-            <span>Inicio</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="tickets.html" class="nav-link">
-            <i class="bi bi-ticket-detailed-fill"></i>
-            <span>Tickets</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="incidencias.html" class="nav-link">
-            <i class="bi bi-exclamation-triangle-fill"></i>
-            <span>Incidencias</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="reportes.html" class="nav-link">
-            <i class="bi bi-bar-chart-line-fill"></i>
-            <span>Reportes</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="usuarios.html" class="nav-link">
-            <i class="bi bi-people-fill"></i>
-            <span>Registro de usuarios</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="perfil.html" class="nav-link">
-            <i class="bi bi-person-circle"></i>
-            <span>Perfil</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="configuracion.html" class="nav-link">
-            <i class="bi bi-gear-fill"></i>
-            <span>Configuración</span>
-          </a>
-        </li>
-      </ul>
+      <!-- CONTENIDO PRINCIPAL -->
+      <div class="main-content">
+        <!-- TOP NAVBAR -->
+        <header class="top-navbar">
+          <div class="navbar-left">
+            <button
+              class="sidebar-toggle-btn"
+              id="sidebarToggleBtn"
+              aria-label="Abrir Menú"
+            >
+              <i class="bi bi-list"></i>
+            </button>
+            <div>
+              <h1 class="page-header-title">Panel Principal</h1>
+              <small class="text-muted d-none d-sm-inline"
+                >Visión general y monitoreo operativo en tiempo real</small
+              >
+            </div>
+          </div>
 
-      <div class="sidebar-footer">
-        <div>IMPULSA A365 &copy; 2026</div>
-        <small class="text-secondary">v2.4 - UTP Integrador</small>
+          <div class="navbar-right">
+            <!-- Campana Notificaciones -->
+            <button
+              class="notification-btn"
+              type="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              title="Notificaciones"
+            >
+              <i class="bi bi-bell"></i>
+              <span class="notification-badge">3</span>
+            </button>
+            <ul
+              class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 p-2"
+              style="min-width: 280px"
+            >
+              <li class="dropdown-header fw-bold text-dark border-bottom pb-2">
+                Notificaciones del Sistema
+              </li>
+              <li>
+                <a class="dropdown-item py-2 small" href="tickets.html"
+                  ><i class="bi bi-exclamation-circle text-danger me-2"></i>
+                  Nuevo ticket #TK-003 requiere revisión</a
+                >
+              </li>
+              <li>
+                <a class="dropdown-item py-2 small" href="incidencias.html"
+                  ><i class="bi bi-arrow-repeat text-primary me-2"></i>
+                  Incidencia #4521 actualizada</a
+                >
+              </li>
+              <li>
+                <a class="dropdown-item py-2 small" href="tickets.html"
+                  ><i class="bi bi-check-circle text-success me-2"></i> Ticket
+                  #TK-002 cerrado con SLA cumplido</a
+                >
+              </li>
+            </ul>
+
+            <!-- Perfil Usuario -->
+            <a href="perfil.html" class="user-profile-badge">
+              <div class="avatar-circle">GG</div>
+              <div class="user-meta d-none d-md-flex">
+                <span class="user-name">Grace Galán</span>
+                <span class="user-role">Administradora</span>
+              </div>
+            </a>
+
+            <!-- Botón Cerrar Sesión -->
+            <a
+              href="login.html"
+              class="btn-logout"
+              title="Salir de la plataforma"
+            >
+              <i class="bi bi-box-arrow-right"></i>
+              <span class="d-none d-sm-inline">Cerrar sesión</span>
+            </a>
+          </div>
+        </header>
+
+        <!-- CUERPO DE LA PÁGINA -->
+        <main class="page-body">
+          <!-- FILA DE TARJETAS KPI (FIGMA) -->
+          <div class="row g-3 mb-4">
+            <!-- KPI 1 -->
+            <div class="col-12 col-sm-6 col-xl-3">
+              <div class="kpi-card kpi-orange">
+                <div>
+                  <div class="kpi-title">Tickets Pendientes</div>
+                  <div class="kpi-value">14</div>
+                  <span class="kpi-badge"
+                    ><i class="bi bi-clock me-1"></i>Sep 2026</span
+                  >
+                </div>
+                <div class="kpi-icon-box">
+                  <i class="bi bi-hourglass-split"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- KPI 2 -->
+            <div class="col-12 col-sm-6 col-xl-3">
+              <div class="kpi-card kpi-green">
+                <div>
+                  <div class="kpi-title">Tickets Atendidos</div>
+                  <div class="kpi-value">89</div>
+                  <span class="kpi-badge"
+                    ><i class="bi bi-check2 me-1"></i>Sep 2026</span
+                  >
+                </div>
+                <div class="kpi-icon-box">
+                  <i class="bi bi-check2-circle"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- KPI 3 -->
+            <div class="col-12 col-sm-6 col-xl-3">
+              <div class="kpi-card kpi-red">
+                <div>
+                  <div class="kpi-title">Tickets Cancelados</div>
+                  <div class="kpi-value">7</div>
+                  <span class="kpi-badge"
+                    ><i class="bi bi-x me-1"></i>Sep 2026</span
+                  >
+                </div>
+                <div class="kpi-icon-box">
+                  <i class="bi bi-x-circle"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- KPI 4 -->
+            <div class="col-12 col-sm-6 col-xl-3">
+              <div class="kpi-card kpi-blue">
+                <div>
+                  <div class="kpi-title">Total del Mes</div>
+                  <div class="kpi-value">110</div>
+                  <span class="kpi-badge"
+                    ><i class="bi bi-folder2-open me-1"></i>Sep 2026</span
+                  >
+                </div>
+                <div class="kpi-icon-box">
+                  <i class="bi bi-file-earmark-text"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- FILA INTERMEDIA: CALENDARIO Y TICKETS ACTIVOS -->
+          <div class="row g-4 mb-4">
+            <!-- Columna Calendario de Actividades -->
+            <div class="col-12 col-lg-5 col-xl-4">
+              <div class="calendar-widget h-100">
+                <div
+                  class="calendar-header d-flex justify-content-between align-items-center"
+                >
+                  <span class="fw-bold text-dark">Septiembre 2026</span>
+                  <span class="badge bg-light text-secondary border"
+                    >Mes Actual</span
+                  >
+                </div>
+                <div class="calendar-grid">
+                  <div class="cal-head">D</div>
+                  <div class="cal-head">L</div>
+                  <div class="cal-head">M</div>
+                  <div class="cal-head">M</div>
+                  <div class="cal-head">J</div>
+                  <div class="cal-head">V</div>
+                  <div class="cal-head">S</div>
+
+                  <!-- Días del Calendario (Figma mockup exacto) -->
+                  <div class="cal-day text-muted opacity-50">30</div>
+                  <div class="cal-day text-muted opacity-50">31</div>
+                  <div class="cal-day">1</div>
+                  <div class="cal-day">2</div>
+                  <div class="cal-day">3</div>
+                  <div class="cal-day">4</div>
+                  <div class="cal-day">5</div>
+
+                  <div class="cal-day">6</div>
+                  <div class="cal-day">7</div>
+                  <div class="cal-day">8</div>
+                  <div class="cal-day">9</div>
+                  <div class="cal-day">10</div>
+                  <div class="cal-day">11</div>
+                  <div class="cal-day">12</div>
+
+                  <div class="cal-day">13</div>
+                  <div class="cal-day">14</div>
+                  <div class="cal-day">15</div>
+                  <div class="cal-day">16</div>
+                  <div class="cal-day">17</div>
+                  <div class="cal-day">18</div>
+                  <div class="cal-day">19</div>
+
+                  <div class="cal-day">20</div>
+                  <div class="cal-day">21</div>
+                  <div class="cal-day">22</div>
+                  <div class="cal-day today">23</div>
+                  <div class="cal-day">24</div>
+                  <div class="cal-day">25</div>
+                  <div class="cal-day">26</div>
+
+                  <div class="cal-day">27</div>
+                  <div class="cal-day">28</div>
+                  <div class="cal-day">29</div>
+                  <div class="cal-day">30</div>
+                  <div class="cal-day text-muted opacity-50">1</div>
+                  <div class="cal-day text-muted opacity-50">2</div>
+                  <div class="cal-day text-muted opacity-50">3</div>
+                </div>
+
+                <!-- Eventos programados -->
+                <div class="calendar-events">
+                  <div
+                    class="small fw-bold text-muted mb-2 text-uppercase"
+                    style="font-size: 0.7rem"
+                  >
+                    Eventos agendados para hoy
+                  </div>
+                  <div class="cal-event-item">
+                    <i class="bi bi-record-circle-fill text-danger fs-6"></i>
+                    <span><strong>09:00</strong> — Revisión TK-2026-001</span>
+                  </div>
+                  <div class="cal-event-item">
+                    <i class="bi bi-record-circle-fill text-primary fs-6"></i>
+                    <span
+                      ><strong>14:30</strong> — Reunión de escalamiento nivel
+                      2</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Columna Estado de Tickets Activos -->
+            <div class="col-12 col-lg-7 col-xl-8">
+              <div class="card-custom h-100 mb-0">
+                <div class="card-custom-header">
+                  <h5 class="mb-0">Estado de Tickets Activos</h5>
+                  <a
+                    href="tickets.html"
+                    class="small text-decoration-none fw-semibold text-primary"
+                  >
+                    Ver todos los tickets <i class="bi bi-arrow-right"></i>
+                  </a>
+                </div>
+                <div class="card-custom-body p-0">
+                  <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                      <thead class="table-light small text-secondary">
+                        <tr>
+                          <th class="ps-3 py-3">ASUNTO / INCIDENCIA</th>
+                          <th>PRIORIDAD</th>
+                          <th>RESPONSABLE</th>
+                          <th class="pe-3 text-end">TIEMPO</th>
+                        </tr>
+                      </thead>
+                      <tbody class="small">
+                        <tr>
+                          <td class="ps-3 fw-bold text-dark">
+                            <i
+                              class="bi bi-file-earmark-text text-muted me-2"
+                            ></i
+                            >Error módulo reportes
+                          </td>
+                          <td><span class="badge-priority-alta">Alta</span></td>
+                          <td>
+                            <div class="d-flex align-items-center gap-2">
+                              <span
+                                class="avatar-circle"
+                                style="
+                                  width: 26px;
+                                  height: 26px;
+                                  font-size: 0.7rem;
+                                "
+                                >CM</span
+                              >
+                              <span>Carlos Mendoza</span>
+                            </div>
+                          </td>
+                          <td class="pe-3 text-end text-muted">25m</td>
+                        </tr>
+                        <tr>
+                          <td class="ps-3 fw-bold text-dark">
+                            <i
+                              class="bi bi-file-earmark-text text-muted me-2"
+                            ></i
+                            >Factura pendiente aprobación
+                          </td>
+                          <td><span class="badge-priority-alta">Alta</span></td>
+                          <td>
+                            <div class="d-flex align-items-center gap-2">
+                              <span
+                                class="avatar-circle"
+                                style="
+                                  width: 26px;
+                                  height: 26px;
+                                  font-size: 0.7rem;
+                                  background: #059669;
+                                "
+                                >MR</span
+                              >
+                              <span>Sandra Quispe</span>
+                            </div>
+                          </td>
+                          <td class="pe-3 text-end text-muted">1h 10m</td>
+                        </tr>
+                        <tr>
+                          <td class="ps-3 fw-bold text-dark">
+                            <i
+                              class="bi bi-file-earmark-text text-muted me-2"
+                            ></i
+                            >Acceso a BD MySQL
+                          </td>
+                          <td>
+                            <span class="badge-priority-media">Media</span>
+                          </td>
+                          <td>
+                            <div class="d-flex align-items-center gap-2">
+                              <span
+                                class="avatar-circle"
+                                style="
+                                  width: 26px;
+                                  height: 26px;
+                                  font-size: 0.7rem;
+                                  background: #d97706;
+                                "
+                                >AC</span
+                              >
+                              <span>André Cortez</span>
+                            </div>
+                          </td>
+                          <td class="pe-3 text-end text-muted">2h 45m</td>
+                        </tr>
+                        <tr>
+                          <td class="ps-3 fw-bold text-dark">
+                            <i
+                              class="bi bi-file-earmark-text text-muted me-2"
+                            ></i
+                            >Soporte VPN y conectividad
+                          </td>
+                          <td>
+                            <span class="badge-priority-media">Media</span>
+                          </td>
+                          <td>
+                            <div class="d-flex align-items-center gap-2">
+                              <span
+                                class="avatar-circle"
+                                style="
+                                  width: 26px;
+                                  height: 26px;
+                                  font-size: 0.7rem;
+                                  background: #7c3aed;
+                                "
+                                >FO</span
+                              >
+                              <span>Franchis Obregón</span>
+                            </div>
+                          </td>
+                          <td class="pe-3 text-end text-muted">3h 15m</td>
+                        </tr>
+                        <tr>
+                          <td class="ps-3 fw-bold text-dark">
+                            <i
+                              class="bi bi-file-earmark-text text-muted me-2"
+                            ></i
+                            >Actualizar permisos
+                          </td>
+                          <td><span class="badge-priority-baja">Baja</span></td>
+                          <td>
+                            <div class="d-flex align-items-center gap-2">
+                              <span
+                                class="avatar-circle"
+                                style="
+                                  width: 26px;
+                                  height: 26px;
+                                  font-size: 0.7rem;
+                                  background: #0284c7;
+                                "
+                                >RC</span
+                              >
+                              <span>José Huanca</span>
+                            </div>
+                          </td>
+                          <td class="pe-3 text-end text-muted">5h 00m</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- FILA INFERIOR: LÍNEA DE TIEMPO (HOY) -->
+          <div class="card-custom mb-0">
+            <div class="card-custom-header">
+              <h5 class="mb-0">Línea de tiempo — hoy</h5>
+              <span class="badge bg-light text-secondary border"
+                >23 de Septiembre 2026</span
+              >
+            </div>
+            <div class="card-custom-body">
+              <div class="timeline-horizontal">
+                <div class="timeline-step">
+                  <div class="timeline-step-time">
+                    <i class="bi bi-clock me-1"></i>08:30
+                  </div>
+                  <div class="timeline-step-desc">
+                    TK-001 abierto por C. Mendoza
+                  </div>
+                </div>
+                <div class="timeline-step">
+                  <div class="timeline-step-time">
+                    <i class="bi bi-clock me-1"></i>09:15
+                  </div>
+                  <div class="timeline-step-desc">
+                    TK-001 asignado a J. Quispe
+                  </div>
+                </div>
+                <div class="timeline-step">
+                  <div class="timeline-step-time text-success">
+                    <i class="bi bi-check-circle me-1"></i>10:45
+                  </div>
+                  <div class="timeline-step-desc">
+                    TK-002 completado exitosamente
+                  </div>
+                </div>
+                <div class="timeline-step">
+                  <div class="timeline-step-time text-danger">
+                    <i class="bi bi-arrow-up-circle me-1"></i>11:30
+                  </div>
+                  <div class="timeline-step-desc">
+                    TK-003 escalado a nivel 2
+                  </div>
+                </div>
+                <div class="timeline-step">
+                  <div class="timeline-step-time text-primary">
+                    <i class="bi bi-plus-circle me-1"></i>12:15
+                  </div>
+                  <div class="timeline-step-desc">
+                    INC-002 registrada por J. Huerta
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
       </div>
-    </aside>
-
-    <!-- CONTENIDO PRINCIPAL -->
-    <div class="main-content">
-      <!-- TOP NAVBAR -->
-      <header class="top-navbar">
-        <div class="navbar-left">
-          <button class="sidebar-toggle-btn" id="sidebarToggleBtn" aria-label="Abrir Menú">
-            <i class="bi bi-list"></i>
-          </button>
-          <div>
-            <h1 class="page-header-title">Panel Principal</h1>
-            <small class="text-muted d-none d-sm-inline">Visión general y monitoreo operativo en tiempo real</small>
-          </div>
-        </div>
-
-        <div class="navbar-right">
-          <!-- Campana Notificaciones -->
-          <button class="notification-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Notificaciones">
-            <i class="bi bi-bell"></i>
-            <span class="notification-badge">3</span>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 p-2" style="min-width: 280px;">
-            <li class="dropdown-header fw-bold text-dark border-bottom pb-2">Notificaciones del Sistema</li>
-            <li><a class="dropdown-item py-2 small" href="tickets.html"><i class="bi bi-exclamation-circle text-danger me-2"></i> Nuevo ticket #TK-003 requiere revisión</a></li>
-            <li><a class="dropdown-item py-2 small" href="incidencias.html"><i class="bi bi-arrow-repeat text-primary me-2"></i> Incidencia #4521 actualizada</a></li>
-            <li><a class="dropdown-item py-2 small" href="tickets.html"><i class="bi bi-check-circle text-success me-2"></i> Ticket #TK-002 cerrado con SLA cumplido</a></li>
-          </ul>
-
-          <!-- Perfil Usuario -->
-          <a href="perfil.html" class="user-profile-badge">
-            <div class="avatar-circle">GG</div>
-            <div class="user-meta d-none d-md-flex">
-              <span class="user-name">Grace Galán</span>
-              <span class="user-role">Administradora</span>
-            </div>
-          </a>
-
-          <!-- Botón Cerrar Sesión -->
-          <a href="login.html" class="btn-logout" title="Salir de la plataforma">
-            <i class="bi bi-box-arrow-right"></i>
-            <span class="d-none d-sm-inline">Cerrar sesión</span>
-          </a>
-        </div>
-      </header>
-
-      <!-- CUERPO DE LA PÁGINA -->
-      <main class="page-body">
-        
-        <!-- FILA DE TARJETAS KPI (FIGMA) -->
-        <div class="row g-3 mb-4">
-          <!-- KPI 1 -->
-          <div class="col-12 col-sm-6 col-xl-3">
-            <div class="kpi-card kpi-orange">
-              <div>
-                <div class="kpi-title">Tickets Pendientes</div>
-                <div class="kpi-value">14</div>
-                <span class="kpi-badge"><i class="bi bi-clock me-1"></i>Sep 2026</span>
-              </div>
-              <div class="kpi-icon-box">
-                <i class="bi bi-hourglass-split"></i>
-              </div>
-            </div>
-          </div>
-
-          <!-- KPI 2 -->
-          <div class="col-12 col-sm-6 col-xl-3">
-            <div class="kpi-card kpi-green">
-              <div>
-                <div class="kpi-title">Tickets Atendidos</div>
-                <div class="kpi-value">89</div>
-                <span class="kpi-badge"><i class="bi bi-check2 me-1"></i>Sep 2026</span>
-              </div>
-              <div class="kpi-icon-box">
-                <i class="bi bi-check2-circle"></i>
-              </div>
-            </div>
-          </div>
-
-          <!-- KPI 3 -->
-          <div class="col-12 col-sm-6 col-xl-3">
-            <div class="kpi-card kpi-red">
-              <div>
-                <div class="kpi-title">Tickets Cancelados</div>
-                <div class="kpi-value">7</div>
-                <span class="kpi-badge"><i class="bi bi-x me-1"></i>Sep 2026</span>
-              </div>
-              <div class="kpi-icon-box">
-                <i class="bi bi-x-circle"></i>
-              </div>
-            </div>
-          </div>
-
-          <!-- KPI 4 -->
-          <div class="col-12 col-sm-6 col-xl-3">
-            <div class="kpi-card kpi-blue">
-              <div>
-                <div class="kpi-title">Total del Mes</div>
-                <div class="kpi-value">110</div>
-                <span class="kpi-badge"><i class="bi bi-folder2-open me-1"></i>Sep 2026</span>
-              </div>
-              <div class="kpi-icon-box">
-                <i class="bi bi-file-earmark-text"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- FILA INTERMEDIA: CALENDARIO Y TICKETS ACTIVOS -->
-        <div class="row g-4 mb-4">
-          <!-- Columna Calendario de Actividades -->
-          <div class="col-12 col-lg-5 col-xl-4">
-            <div class="calendar-widget h-100">
-              <div class="calendar-header d-flex justify-content-between align-items-center">
-                <span class="fw-bold text-dark">Septiembre 2026</span>
-                <span class="badge bg-light text-secondary border">Mes Actual</span>
-              </div>
-              <div class="calendar-grid">
-                <div class="cal-head">D</div>
-                <div class="cal-head">L</div>
-                <div class="cal-head">M</div>
-                <div class="cal-head">M</div>
-                <div class="cal-head">J</div>
-                <div class="cal-head">V</div>
-                <div class="cal-head">S</div>
-
-                <!-- Días del Calendario (Figma mockup exacto) -->
-                <div class="cal-day text-muted opacity-50">30</div>
-                <div class="cal-day text-muted opacity-50">31</div>
-                <div class="cal-day">1</div>
-                <div class="cal-day">2</div>
-                <div class="cal-day">3</div>
-                <div class="cal-day">4</div>
-                <div class="cal-day">5</div>
-
-                <div class="cal-day">6</div>
-                <div class="cal-day">7</div>
-                <div class="cal-day">8</div>
-                <div class="cal-day">9</div>
-                <div class="cal-day">10</div>
-                <div class="cal-day">11</div>
-                <div class="cal-day">12</div>
-
-                <div class="cal-day">13</div>
-                <div class="cal-day">14</div>
-                <div class="cal-day">15</div>
-                <div class="cal-day">16</div>
-                <div class="cal-day">17</div>
-                <div class="cal-day">18</div>
-                <div class="cal-day">19</div>
-
-                <div class="cal-day">20</div>
-                <div class="cal-day">21</div>
-                <div class="cal-day">22</div>
-                <div class="cal-day today">23</div>
-                <div class="cal-day">24</div>
-                <div class="cal-day">25</div>
-                <div class="cal-day">26</div>
-
-                <div class="cal-day">27</div>
-                <div class="cal-day">28</div>
-                <div class="cal-day">29</div>
-                <div class="cal-day">30</div>
-                <div class="cal-day text-muted opacity-50">1</div>
-                <div class="cal-day text-muted opacity-50">2</div>
-                <div class="cal-day text-muted opacity-50">3</div>
-              </div>
-
-              <!-- Eventos programados -->
-              <div class="calendar-events">
-                <div class="small fw-bold text-muted mb-2 text-uppercase" style="font-size: 0.7rem;">Eventos agendados para hoy</div>
-                <div class="cal-event-item">
-                  <i class="bi bi-record-circle-fill text-danger fs-6"></i>
-                  <span><strong>09:00</strong> — Revisión TK-2026-001</span>
-                </div>
-                <div class="cal-event-item">
-                  <i class="bi bi-record-circle-fill text-primary fs-6"></i>
-                  <span><strong>14:30</strong> — Reunión de escalamiento nivel 2</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Columna Estado de Tickets Activos -->
-          <div class="col-12 col-lg-7 col-xl-8">
-            <div class="card-custom h-100 mb-0">
-              <div class="card-custom-header">
-                <h5 class="mb-0">Estado de Tickets Activos</h5>
-                <a href="tickets.html" class="small text-decoration-none fw-semibold text-primary">
-                  Ver todos los tickets <i class="bi bi-arrow-right"></i>
-                </a>
-              </div>
-              <div class="card-custom-body p-0">
-                <div class="table-responsive">
-                  <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light small text-secondary">
-                      <tr>
-                        <th class="ps-3 py-3">ASUNTO / INCIDENCIA</th>
-                        <th>PRIORIDAD</th>
-                        <th>RESPONSABLE</th>
-                        <th class="pe-3 text-end">TIEMPO</th>
-                      </tr>
-                    </thead>
-                    <tbody class="small">
-                      <tr>
-                        <td class="ps-3 fw-bold text-dark">
-                          <i class="bi bi-file-earmark-text text-muted me-2"></i>Error módulo reportes
-                        </td>
-                        <td><span class="badge-priority-alta">Alta</span></td>
-                        <td>
-                          <div class="d-flex align-items-center gap-2">
-                            <span class="avatar-circle" style="width: 26px; height: 26px; font-size: 0.7rem;">CM</span>
-                            <span>Carlos Mendoza</span>
-                          </div>
-                        </td>
-                        <td class="pe-3 text-end text-muted">25m</td>
-                      </tr>
-                      <tr>
-                        <td class="ps-3 fw-bold text-dark">
-                          <i class="bi bi-file-earmark-text text-muted me-2"></i>Factura pendiente aprobación
-                        </td>
-                        <td><span class="badge-priority-alta">Alta</span></td>
-                        <td>
-                          <div class="d-flex align-items-center gap-2">
-                            <span class="avatar-circle" style="width: 26px; height: 26px; font-size: 0.7rem; background: #059669;">MR</span>
-                            <span>María Ruiz</span>
-                          </div>
-                        </td>
-                        <td class="pe-3 text-end text-muted">1h 10m</td>
-                      </tr>
-                      <tr>
-                        <td class="ps-3 fw-bold text-dark">
-                          <i class="bi bi-file-earmark-text text-muted me-2"></i>Acceso a BD MySQL
-                        </td>
-                        <td><span class="badge-priority-media">Media</span></td>
-                        <td>
-                          <div class="d-flex align-items-center gap-2">
-                            <span class="avatar-circle" style="width: 26px; height: 26px; font-size: 0.7rem; background: #d97706;">AC</span>
-                            <span>André Cortez</span>
-                          </div>
-                        </td>
-                        <td class="pe-3 text-end text-muted">2h 45m</td>
-                      </tr>
-                      <tr>
-                        <td class="ps-3 fw-bold text-dark">
-                          <i class="bi bi-file-earmark-text text-muted me-2"></i>Soporte VPN y conectividad
-                        </td>
-                        <td><span class="badge-priority-media">Media</span></td>
-                        <td>
-                          <div class="d-flex align-items-center gap-2">
-                            <span class="avatar-circle" style="width: 26px; height: 26px; font-size: 0.7rem; background: #7c3aed;">FO</span>
-                            <span>Franchis Obregón</span>
-                          </div>
-                        </td>
-                        <td class="pe-3 text-end text-muted">3h 15m</td>
-                      </tr>
-                      <tr>
-                        <td class="ps-3 fw-bold text-dark">
-                          <i class="bi bi-file-earmark-text text-muted me-2"></i>Actualizar permisos
-                        </td>
-                        <td><span class="badge-priority-baja">Baja</span></td>
-                        <td>
-                          <div class="d-flex align-items-center gap-2">
-                            <span class="avatar-circle" style="width: 26px; height: 26px; font-size: 0.7rem; background: #0284c7;">RC</span>
-                            <span>Rai De la Cruz</span>
-                          </div>
-                        </td>
-                        <td class="pe-3 text-end text-muted">5h 00m</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- FILA INFERIOR: LÍNEA DE TIEMPO (HOY) -->
-        <div class="card-custom mb-0">
-          <div class="card-custom-header">
-            <h5 class="mb-0">Línea de tiempo — hoy</h5>
-            <span class="badge bg-light text-secondary border">23 de Septiembre 2026</span>
-          </div>
-          <div class="card-custom-body">
-            <div class="timeline-horizontal">
-              <div class="timeline-step">
-                <div class="timeline-step-time"><i class="bi bi-clock me-1"></i>08:30</div>
-                <div class="timeline-step-desc">TK-001 abierto por C. Mendoza</div>
-              </div>
-              <div class="timeline-step">
-                <div class="timeline-step-time"><i class="bi bi-clock me-1"></i>09:15</div>
-                <div class="timeline-step-desc">TK-001 asignado a J. Quispe</div>
-              </div>
-              <div class="timeline-step">
-                <div class="timeline-step-time text-success"><i class="bi bi-check-circle me-1"></i>10:45</div>
-                <div class="timeline-step-desc">TK-002 completado exitosamente</div>
-              </div>
-              <div class="timeline-step">
-                <div class="timeline-step-time text-danger"><i class="bi bi-arrow-up-circle me-1"></i>11:30</div>
-                <div class="timeline-step-desc">TK-003 escalado a nivel 2</div>
-              </div>
-              <div class="timeline-step">
-                <div class="timeline-step-time text-primary"><i class="bi bi-plus-circle me-1"></i>12:15</div>
-                <div class="timeline-step-desc">INC-002 registrada por J. Huerta</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </main>
     </div>
-  </div>
 
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <!-- Script Principal -->
-  <script src="js/main.js"></script>
-</body>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Script Principal -->
+    <script src="js/main.js"></script>
+  </body>
 </html>
