@@ -80,6 +80,17 @@ Crear y editar usuarios consulta GET /api/usuarios/departamentos. El backend dev
 
 Tras actualizar el backend, reiniciarlo con mvn spring-boot:run para habilitar el nuevo endpoint. Si el catálogo falla, el formulario muestra un error y permite reintentar.
 
-## Puerto de desarrollo
+## Publicación en Vercel
+
+El sitio público es https://a365-project.vercel.app y el backend https://backend-a365.onrender.com.
+`vercel.json` reenvía `/api/:path*` a Render conservando el prefijo `/api`; las demás rutas de React cargan `index.html` para permitir recargar enlaces como `/login`.
+
+- En Vercel seleccionar Vite, build `npm run build`, salida `dist` y la carpeta que contiene este package.json como Root Directory.
+- Dejar VITE_API_URL sin definir o establecer `/api`. API_PROXY_TARGET solo se usa en desarrollo local.
+- En Render establecer ALLOWED_ORIGINS=https://a365-project.vercel.app y SESSION_COOKIE_SECURE=true, y aplicar el despliegue.
+- Subir vercel.json a GitHub para que Vercel publique la configuración. Después comprobar https://a365-project.vercel.app/api/auth/csrf: debe devolver JSON con token y headerName, no HTML. La cookie permanece bajo el dominio del frontend.
+- Las vistas de Preview con otros dominios requieren autorización explícita de esos orígenes en Render; no habilitar un comodín para sesiones con credenciales.
+
+### Desarrollo local
 
 Vite usa el puerto fijo 5173 (strictPort). Si ya está ocupado, detén la instancia anterior con Ctrl+C antes de iniciar otra. Abre http://127.0.0.1:5173 o http://localhost:5173; no reutilices una pestaña antigua en 5174. El backend admite esos orígenes concretos y conserva la protección CSRF. Después de reiniciar Vite, recarga la pestaña para renovar la conexión de desarrollo.
