@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Operativo de Empleado | IMPULSA A365</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <div class="app-wrapper">
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- SIDEBAR DIFERENCIADO DEL EMPLEADO (SIN GESTIÓN DE USUARIOS NI ROLES) -->
+    <aside class="sidebar" id="sidebar">
+      <a href="empleado.html" class="sidebar-brand">
+        <div class="brand-badge" style="background:#0d9488;">EMP</div>
+        <div class="brand-info">
+          <span class="brand-title">IMPULSA A365</span>
+          <span class="brand-subtitle">Mesa Técnica Empleado</span>
+        </div>
+      </a>
+
+      <ul class="sidebar-menu">
+        <li class="nav-item">
+          <a href="empleado.html" class="nav-link active">
+            <i class="bi bi-headset"></i>
+            <span>Bandeja de Atención</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="incidencias.html" class="nav-link">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span>Reportar Incidencia</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="perfil.html" class="nav-link">
+            <i class="bi bi-person-circle"></i>
+            <span>Mi Perfil</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <div class="badge bg-info text-dark mb-1">MODO EMPLEADO</div>
+        <div>Sin permisos de Admin</div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+      <header class="top-navbar">
+        <div class="navbar-left">
+          <button class="sidebar-toggle-btn" id="sidebarToggleBtn">
+            <i class="bi bi-list"></i>
+          </button>
+          <div>
+            <h1 class="page-header-title">Panel Operativo de Soporte Técnico</h1>
+            <small class="text-muted d-none d-sm-inline">Atención en tiempo real de los tickets enviados por los clientes</small>
+          </div>
+        </div>
+
+        <div class="navbar-right">
+          <a href="index.html" class="btn btn-sm btn-outline-secondary d-none d-md-inline-flex align-items-center gap-1">
+            <i class="bi bi-globe"></i> Ver Portal Cliente
+          </a>
+
+          <a href="perfil.html" class="user-profile-badge">
+            <div class="avatar-circle" style="background:#0d9488;">CM</div>
+            <div class="user-meta d-none d-md-flex">
+              <span class="user-name">Carlos Mendoza</span>
+              <span class="user-role">Empleado Soporte</span>
+            </div>
+          </a>
+
+          <a href="login.html" class="btn-logout" onclick="localStorage.removeItem('a365_user')">
+            <i class="bi bi-box-arrow-right"></i>
+            <span class="d-none d-sm-inline">Cerrar sesión</span>
+          </a>
+        </div>
+      </header>
+
+      <main class="page-body">
+        <!-- KPIS OPERATIVOS DEL EMPLEADO -->
+        <div class="row g-3 mb-4">
+          <div class="col-12 col-sm-4">
+            <div class="kpi-card kpi-orange">
+              <div>
+                <div class="kpi-title">Por Atender / En Proceso</div>
+                <div class="kpi-value" id="empKpiPendientes">0</div>
+                <span class="kpi-badge">Cola activa en Supabase</span>
+              </div>
+              <div class="kpi-icon-box"><i class="bi bi-hourglass-split"></i></div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-4">
+            <div class="kpi-card kpi-green">
+              <div>
+                <div class="kpi-title">Tickets Resueltos</div>
+                <div class="kpi-value" id="empKpiResueltos">0</div>
+                <span class="kpi-badge">Atención finalizada</span>
+              </div>
+              <div class="kpi-icon-box"><i class="bi bi-check2-circle"></i></div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-4">
+            <div class="kpi-card kpi-blue">
+              <div>
+                <div class="kpi-title">Total Recibidos</div>
+                <div class="kpi-value" id="empKpiTotal">0</div>
+                <span class="kpi-badge">Desde Portal Cliente</span>
+              </div>
+              <div class="kpi-icon-box"><i class="bi bi-inbox"></i></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TABLA OPERATIVA DE TICKETS DE CLIENTES SEPARADA EN PENDIENTES vs RESUELTOS -->
+        <div class="card-custom">
+          <div class="card-custom-body p-4">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+              <div>
+                <h5 class="fw-bold mb-1"><i class="bi bi-ticket-detailed text-primary me-2"></i>Bandeja de Solicitudes de Clientes</h5>
+                <p class="text-muted small mb-0">Al marcar un ticket como <strong>Resuelto</strong>, sale automáticamente de Pendientes y pasa al historial de Resueltos.</p>
+              </div>
+              <button class="btn btn-outline-primary fw-bold d-flex align-items-center gap-2" onclick="cargarBandejaEmpleado()">
+                <i class="bi bi-arrow-clockwise"></i>Refrescar Bandeja
+              </button>
+            </div>
+
+            <!-- Pestañas: Por Atender vs Resueltos -->
+            <ul class="nav nav-pills gap-2 mb-3" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button type="button" id="empTabPendBtn" class="nav-link active rounded-pill px-4 py-2 fw-bold d-flex align-items-center gap-2" onclick="cambiarTabEmpleado('PENDIENTES')">
+                  <i class="bi bi-hourglass-split"></i>
+                  <span>Por Atender / Pendientes</span>
+                  <span class="badge bg-danger rounded-pill" id="empBadgePend">0</span>
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button type="button" id="empTabResBtn" class="nav-link rounded-pill px-4 py-2 fw-bold d-flex align-items-center gap-2" onclick="cambiarTabEmpleado('RESUELTOS')">
+                  <i class="bi bi-check2-circle"></i>
+                  <span>Resueltos / Historial</span>
+                  <span class="badge bg-success rounded-pill" id="empBadgeRes">0</span>
+                </button>
+              </li>
+            </ul>
+
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light small text-secondary">
+                  <tr>
+                    <th>CÓDIGO</th>
+                    <th>CLIENTE / SOLICITANTE</th>
+                    <th>ASUNTO Y CATEGORÍA</th>
+                    <th>PRIORIDAD</th>
+                    <th>ESTADO ACTUAL</th>
+                    <th class="text-end">ACCIONES DEL EMPLEADO</th>
+                  </tr>
+                </thead>
+                <tbody id="empleadoTicketsBody">
+                  <tr>
+                    <td colspan="6" class="text-center py-4 text-muted">Cargando tickets desde Supabase...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- MODAL DE ATENCIÓN Y RESPUESTA TÉCNICA (HILO BIDIRECCIONAL CON EL CLIENTE) -->
+  <div class="modal fade" id="modalAtenderTicket" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg rounded-4">
+        <div class="modal-header bg-light">
+          <h5 class="modal-title fw-bold d-flex align-items-center gap-2">
+            <span class="badge bg-primary" id="empModalCodigo">#TK</span>
+            <span id="empModalAsunto">Detalle del Ticket</span>
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-4">
+          <div class="p-3 rounded-3 mb-3 border" style="background:#f8fafc;">
+            <small class="text-secondary fw-bold d-block mb-1">DESCRIPCIÓN ENVIADA POR EL CLIENTE:</small>
+            <div class="text-dark" id="empModalDescripcion"></div>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+            <h6 class="fw-bold mb-0"><i class="bi bi-chat-dots-fill text-primary me-2"></i>Conversación en Vivo con el Cliente</h6>
+            <button type="button" class="btn btn-sm btn-outline-primary rounded-pill" onclick="if(currentTicketId) cargarMensajesTicket(currentTicketId)">
+              <i class="bi bi-arrow-clockwise me-1"></i>Actualizar Mensajes
+            </button>
+          </div>
+          <div id="empMensajesContainer" class="p-3 bg-light rounded-3 mb-3 border" style="max-height:290px; overflow-y:auto;"></div>
+
+          <form onsubmit="enviarRespuestaEmpleado(event)">
+            <label for="empRespuestaInput" class="form-label small fw-bold text-secondary mb-1">RESPONDER AL CLIENTE:</label>
+            <div class="input-group">
+              <input type="text" id="empRespuestaInput" class="form-control" placeholder="Escribe aquí tu respuesta o solución para el cliente..." required>
+              <button class="btn btn-primary fw-bold px-4" type="submit">
+                <i class="bi bi-send-fill me-1"></i>Enviar Mensaje
+              </button>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer bg-light d-flex flex-wrap justify-content-between gap-2">
+          <div class="d-flex flex-wrap gap-2">
+            <button type="button" class="btn btn-warning fw-bold" onclick="cambiarEstadoTicketEmpleado(currentTicketId, 'EN_PROCESO')">
+              <i class="bi bi-gear-wide-connected me-1"></i>Marcar En Proceso
+            </button>
+            <button type="button" class="btn btn-success fw-bold" onclick="cambiarEstadoTicketEmpleado(currentTicketId, 'RESUELTO')">
+              <i class="bi bi-check-circle-fill me-1"></i>Marcar Resuelto (Mover a Resueltos)
+            </button>
+            <button type="button" class="btn btn-outline-danger fw-bold" onclick="cambiarEstadoTicketEmpleado(currentTicketId, 'CANCELADO')">
+              Cancelar Ticket
+            </button>
+          </div>
+          <button type="button" class="btn btn-outline-secondary fw-bold" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    const API_TICKETS = 'http://localhost:8089/api/tickets';
+    let currentTicketId = null;
+    let listaTickets = [];
+    let filtroTabEmpleado = 'PENDIENTES';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      cargarBandejaEmpleado();
+    });
+
+    function cambiarTabEmpleado(tab) {
+      filtroTabEmpleado = tab;
+      const btnPend = document.getElementById('empTabPendBtn');
+      const btnRes = document.getElementById('empTabResBtn');
+      if (tab === 'PENDIENTES') {
+        btnPend.classList.add('active');
+        btnRes.classList.remove('active');
+      } else {
+        btnRes.classList.add('active');
+        btnPend.classList.remove('active');
+      }
+      renderBandeja();
+    }
+
+    function cargarBandejaEmpleado() {
+      fetch(API_TICKETS)
+        .then(res => res.json())
+        .then(data => {
+          listaTickets = Array.isArray(data) ? data : [];
+          actualizarKpisLocales();
+          renderBandeja();
+        });
+    }
+
+    function actualizarKpisLocales() {
+      const pend = listaTickets.filter(t => t.estado !== 'RESUELTO' && t.estado !== 'CERRADO' && t.estado !== 'CANCELADO').length;
+      const res = listaTickets.filter(t => t.estado === 'RESUELTO' || t.estado === 'CERRADO' || t.estado === 'CANCELADO').length;
+      document.getElementById('empKpiPendientes').innerText = pend;
+      document.getElementById('empKpiResueltos').innerText = res;
+      document.getElementById('empKpiTotal').innerText = listaTickets.length;
+      if (document.getElementById('empBadgePend')) document.getElementById('empBadgePend').innerText = pend;
+      if (document.getElementById('empBadgeRes')) document.getElementById('empBadgeRes').innerText = res;
+    }
+
+    function renderBandeja() {
+      const tbody = document.getElementById('empleadoTicketsBody');
+      tbody.innerHTML = '';
+
+      const filtrados = listaTickets.filter(t => {
+        const esFinalizado = (t.estado === 'RESUELTO' || t.estado === 'CERRADO' || t.estado === 'CANCELADO');
+        return filtroTabEmpleado === 'PENDIENTES' ? !esFinalizado : esFinalizado;
+      });
+
+      if (filtrados.length === 0) {
+        const msg = filtroTabEmpleado === 'PENDIENTES'
+          ? '🎉 ¡Excelente! No tienes tickets pendientes por atender en este momento.'
+          : 'Aún no hay tickets en el historial de resueltos.';
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-5 text-muted fw-semibold">${msg}</td></tr>`;
+        return;
+      }
+
+      filtrados.forEach(t => {
+        let statusBadge = '<span class="badge-status-pendiente">' + t.estado + '</span>';
+        if (t.estado === 'EN_PROCESO') statusBadge = '<span class="badge-status-proceso">En Proceso</span>';
+        else if (t.estado === 'RESUELTO' || t.estado === 'CERRADO') statusBadge = '<span class="badge-status-aprobada">Resuelto ✓</span>';
+        else if (t.estado === 'CANCELADO') statusBadge = '<span class="badge bg-danger">Cancelado</span>';
+
+        const esPendiente = (t.estado !== 'RESUELTO' && t.estado !== 'CERRADO' && t.estado !== 'CANCELADO');
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong class="text-dark">#${(t.codigo || '').replace('#','')}</strong><br><small class="text-muted">${t.fecha || ''}</small></td>
+          <td><strong class="text-dark">${t.solicitante || 'Cliente'}</strong></td>
+          <td>
+            <strong class="text-dark d-block" style="font-size:1rem;">${t.asunto}</strong>
+            <span class="badge bg-light text-secondary border mt-1">${t.categoria}</span>
+          </td>
+          <td><span class="badge-priority-${(t.prioridad || 'media').toLowerCase()}">${t.prioridad}</span></td>
+          <td>${statusBadge}</td>
+          <td class="text-end">
+            <div class="d-inline-flex flex-wrap gap-2 justify-content-end">
+              <button class="btn btn-primary fw-bold d-inline-flex align-items-center gap-2" onclick="abrirAtencion(${t.idTicket})">
+                <i class="bi bi-chat-dots-fill"></i>
+                <span>Abrir Chat / Atender</span>
+              </button>
+              ${esPendiente ? `
+                <button class="btn btn-success fw-bold d-inline-flex align-items-center gap-1" onclick="cambiarEstadoTicketEmpleado(${t.idTicket}, 'RESUELTO')" title="Marcar como Resuelto y mover al historial">
+                  <i class="bi bi-check2-circle"></i>
+                  <span>Resolver</span>
+                </button>
+              ` : ''}
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function abrirAtencion(idTicket) {
+      currentTicketId = idTicket;
+      const t = listaTickets.find(item => item.idTicket === idTicket);
+      if (!t) return;
+      document.getElementById('empModalCodigo').innerText = '#' + (t.codigo || '').replace('#','');
+      document.getElementById('empModalAsunto').innerText = t.asunto;
+      document.getElementById('empModalDescripcion').innerText = t.descripcion || 'Sin descripción adicional.';
+      cargarMensajesTicket(idTicket);
+      new bootstrap.Modal(document.getElementById('modalAtenderTicket')).show();
+    }
+
+    function cargarMensajesTicket(idTicket) {
+      const box = document.getElementById('empMensajesContainer');
+      box.innerHTML = '<div class="text-center py-3 text-muted small">Cargando conversación con el cliente...</div>';
+      fetch(`${API_TICKETS}/${idTicket}/mensajes`)
+        .then(res => res.json())
+        .then(msgs => {
+          box.innerHTML = '';
+          if (!msgs || msgs.length === 0) {
+            box.innerHTML = `
+              <div class="text-center py-4 text-muted">
+                <i class="bi bi-chat-left-dots fs-3 d-block mb-1"></i>
+                Aún no hay mensajes en este ticket. Escribe abajo para enviarle el primer mensaje al cliente.
+              </div>
+            `;
+            return;
+          }
+          msgs.forEach(m => {
+            const rolUpper = (m.autorRol || '').toUpperCase();
+            const isClient = rolUpper.includes('CLIENTE') || rolUpper.includes('USUARIO');
+            const bubbleBg = isClient ? '#ffffff' : '#e0f2fe';
+            const borderCol = isClient ? '#cbd5e1' : '#7dd3fc';
+            const alignClass = isClient ? 'me-auto' : 'ms-auto';
+            const badgeRol = isClient
+              ? '<span class="badge bg-secondary-subtle text-dark border">Cliente</span>'
+              : '<span class="badge bg-primary text-white">Soporte A365</span>';
+
+            box.innerHTML += `
+              <div class="mb-3 ${alignClass}" style="max-width: 88%;">
+                <div class="d-flex justify-content-between align-items-center small text-muted mb-1 gap-2">
+                  <div><strong class="text-dark">${m.autorNombre}</strong> ${badgeRol}</div>
+                  <span>${m.fecha || ''}</span>
+                </div>
+                <div class="p-3 rounded-4 shadow-sm" style="background-color: ${bubbleBg}; border: 1.5px solid ${borderCol}; font-size: 0.98rem; color: #0f172a;">
+                  ${m.contenido}
+                </div>
+              </div>
+            `;
+          });
+          box.scrollTop = box.scrollHeight;
+        });
+    }
+
+    function enviarRespuestaEmpleado(e) {
+      e.preventDefault();
+      const user = JSON.parse(localStorage.getItem('a365_user') || '{}');
+      const contenido = document.getElementById('empRespuestaInput').value.trim();
+      if (!contenido || !currentTicketId) return;
+
+      fetch(`${API_TICKETS}/${currentTicketId}/mensajes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          idUsuario: user.idUsuario || 2,
+          autorNombre: ((user.nombres || 'Carlos') + ' ' + (user.apellidos || 'Mendoza')).trim(),
+          autorRol: user.rol || 'Empleado Soporte',
+          contenido: contenido
+        })
+      })
+        .then(res => res.json())
+        .then(() => {
+          document.getElementById('empRespuestaInput').value = '';
+          showToast('💬 Mensaje enviado al cliente y guardado en Supabase', 'success');
+          cargarMensajesTicket(currentTicketId);
+        });
+    }
+
+    function cambiarEstadoTicketEmpleado(idTicket, nuevoEstado) {
+      const user = JSON.parse(localStorage.getItem('a365_user') || '{}');
+      fetch(`${API_TICKETS}/${idTicket}/estado`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          estado: nuevoEstado,
+          idUsuario: user.idUsuario || 2
+        })
+      })
+        .then(res => res.json())
+        .then(data => {
+          const msgToast = nuevoEstado === 'RESUELTO'
+            ? '✅ Ticket RESUELTO: Movido de Pendientes a Resueltos'
+            : (data.mensaje || ('Estado cambiado a ' + nuevoEstado));
+          showToast(msgToast, 'success');
+          const modalEl = document.getElementById('modalAtenderTicket');
+          const modalInst = bootstrap.Modal.getInstance(modalEl);
+          if (modalInst) modalInst.hide();
+          cargarBandejaEmpleado();
+        });
+    }
+  </script>
+</body>
+</html>

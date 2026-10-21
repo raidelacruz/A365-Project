@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configuración del Sistema | IMPULSA A365</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <div class="app-wrapper">
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <a href="dashboard.html" class="sidebar-brand">
+        <div class="brand-badge">A365</div>
+        <div class="brand-info">
+          <span class="brand-title">IMPULSA A365</span>
+          <span class="brand-subtitle">Help Desk & CRM</span>
+        </div>
+      </a>
+
+      <ul class="sidebar-menu">
+        <li class="nav-item">
+          <a href="dashboard.html" class="nav-link">
+            <i class="bi bi-grid-1x2-fill"></i>
+            <span>Inicio</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="tickets.html" class="nav-link">
+            <i class="bi bi-ticket-detailed-fill"></i>
+            <span>Tickets</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="incidencias.html" class="nav-link">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span>Incidencias</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="reportes.html" class="nav-link">
+            <i class="bi bi-bar-chart-line-fill"></i>
+            <span>Reportes</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="usuarios.html" class="nav-link">
+            <i class="bi bi-people-fill"></i>
+            <span>Registro de usuarios</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="perfil.html" class="nav-link">
+            <i class="bi bi-person-circle"></i>
+            <span>Perfil</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="configuracion.html" class="nav-link active">
+            <i class="bi bi-gear-fill"></i>
+            <span>Configuración</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <div>IMPULSA A365 &copy; 2026</div>
+        <small class="text-secondary">v2.4 - UTP Integrador</small>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+      <header class="top-navbar">
+        <div class="navbar-left">
+          <button class="sidebar-toggle-btn" id="sidebarToggleBtn">
+            <i class="bi bi-list"></i>
+          </button>
+          <div>
+            <h1 class="page-header-title">Configuración y Seguridad</h1>
+            <small class="text-muted d-none d-sm-inline">Preferencias de cuenta, sesiones en Supabase y servidor de correo SMTP</small>
+          </div>
+        </div>
+
+        <div class="navbar-right">
+          <a href="perfil.html" class="user-profile-badge">
+            <div class="avatar-circle">GG</div>
+            <div class="user-meta d-none d-md-flex">
+              <span class="user-name">Grace Galán</span>
+              <span class="user-role">Administradora</span>
+            </div>
+          </a>
+
+          <a href="login.html" class="btn-logout" onclick="localStorage.removeItem('a365_user')">
+            <i class="bi bi-box-arrow-right"></i>
+            <span class="d-none d-sm-inline">Cerrar sesión</span>
+          </a>
+        </div>
+      </header>
+
+      <main class="page-body">
+        <div class="row justify-content-center g-4">
+          <div class="col-12 col-lg-8 col-xl-7">
+
+            <!-- CARD 1: PREFERENCIAS Y SEGURIDAD DE LA CUENTA EN SUPABASE -->
+            <div class="card-custom mb-4">
+              <div class="card-custom-header">
+                <h5 class="mb-0">Configuración de Cuenta (Supabase)</h5>
+                <span class="badge bg-light text-secondary border">Ajustes en Vivo</span>
+              </div>
+
+              <div class="card-custom-body p-4">
+                <form onsubmit="guardarPreferenciasSupabase(event)">
+
+                  <h6 class="fw-bold text-dark mb-3 pb-2 border-bottom">Notificaciones y Doble Factor (2FA)</h6>
+
+                  <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div>
+                      <strong class="d-block text-dark small">Verificación en 2 Pasos (2FA) al iniciar sesión</strong>
+                      <span class="text-muted" style="font-size: 0.775rem;">Solicitar código de 6 dígitos enviado al correo antes de entrar</span>
+                    </div>
+                    <div class="form-check form-switch fs-5">
+                      <input class="form-check-input" type="checkbox" id="twoFactorSwitch" checked>
+                    </div>
+                  </div>
+
+                  <div class="d-flex align-items-center justify-content-between mb-4">
+                    <div>
+                      <strong class="d-block text-dark small">Alertas de inicio de sesión por correo</strong>
+                      <span class="text-muted" style="font-size: 0.775rem;">Enviar un correo de aviso cada vez que alguien ingrese a tu cuenta</span>
+                    </div>
+                    <div class="form-check form-switch fs-5">
+                      <input class="form-check-input" type="checkbox" id="emailSwitch" checked>
+                    </div>
+                  </div>
+
+                  <h6 class="fw-bold text-dark mb-3 pt-2 pb-2 border-bottom">Seguridad de Acceso</h6>
+
+                  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+                    <div>
+                      <strong class="d-block text-dark small">Cambiar contraseña</strong>
+                      <span class="text-muted" style="font-size: 0.775rem;">Actualiza tu clave directamente en la tabla <code>usuarios</code> de Supabase</span>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-secondary px-3" data-bs-toggle="modal" data-bs-target="#cambiarClaveModal">
+                      Cambiar
+                    </button>
+                  </div>
+
+                  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+                    <div>
+                      <strong class="d-block text-dark small">Historial de sesiones y alertas (Supabase)</strong>
+                      <span class="text-muted" style="font-size: 0.775rem;">Ver registros reales de la tabla <code>sesiones_alertas</code></span>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary px-3" data-bs-toggle="modal" data-bs-target="#sesionesModal" onclick="cargarSesionesSupabase()">
+                      Ver sesiones
+                    </button>
+                  </div>
+
+                  <div class="pt-3 border-top d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary fw-semibold px-4" style="background-color: var(--primary-color); border-color: var(--primary-color);">
+                      Guardar en Supabase
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <!-- CARD 2: SERVIDOR DE CORREO SALIENTE (SMTP) PARA ENVÍOS REALES A GMAIL / OUTLOOK / CUALQUIER APP -->
+            <div class="card-custom mb-0">
+              <div class="card-custom-header">
+                <div>
+                  <h5 class="mb-0"><i class="bi bi-envelope-at text-danger me-2"></i>Servidor de Correo Saliente (SMTP Real)</h5>
+                  <small class="text-muted">Cuenta remitente del sistema que despacha los correos hacia el Gmail/Outlook de cualquier usuario</small>
+                </div>
+                <span class="badge bg-secondary" id="smtpStatusBadge">Verificando...</span>
+              </div>
+              <div class="card-custom-body p-4">
+                <form onsubmit="guardarSmtp(event)">
+                  <div class="row g-2 mb-3">
+                    <div class="col-md-8">
+                      <label class="form-label small fw-bold text-secondary">SERVIDOR SMTP</label>
+                      <input type="text" class="form-control" id="smtpHostInput" value="smtp.gmail.com" required>
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label small fw-bold text-secondary">PUERTO</label>
+                      <input type="number" class="form-control" id="smtpPortInput" value="587" required>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label small fw-bold text-secondary">CORREO REMITENTE DEL SISTEMA (Ej. tu cuenta Gmail)</label>
+                    <input type="email" class="form-control" id="smtpUserInput" placeholder="tucorreo@gmail.com" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label small fw-bold text-secondary">CONTRASEÑA DE APLICACIÓN (16 letras de Google / SMTP Password)</label>
+                    <input type="password" class="form-control" id="smtpPassInput" placeholder="xxxx xxxx xxxx xxxx" required>
+                    <div class="form-text small">
+                      Al activar esto, cuando <strong>cualquier persona</strong> ponga su correo personal (Gmail, Outlook, Hotmail, etc.) en el login o recuperación, recibirá el correo real en su bandeja.
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-danger fw-semibold px-4">
+                      <i class="bi bi-check2-circle me-1"></i>Activar Envío de Correos Reales
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- MODAL CAMBIAR CONTRASEÑA EN SUPABASE -->
+  <div class="modal fade" id="cambiarClaveModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg rounded-4">
+        <div class="modal-header bg-light">
+          <h5 class="modal-title fw-bold text-dark"><i class="bi bi-shield-lock text-primary me-2"></i>Cambiar Contraseña</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form onsubmit="cambiarClaveEnSupabase(event)">
+          <div class="modal-body p-4">
+            <div class="mb-3">
+              <label class="form-label small fw-bold text-secondary">CONTRASEÑA ACTUAL</label>
+              <input type="password" id="passActualInput" class="form-control" placeholder="••••••••" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold text-secondary">NUEVA CONTRASEÑA</label>
+              <input type="password" id="passNuevaInput" class="form-control" placeholder="••••••••" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold text-secondary">CONFIRMAR NUEVA CONTRASEÑA</label>
+              <input type="password" id="passConfirmInput" class="form-control" placeholder="••••••••" required>
+            </div>
+          </div>
+          <div class="modal-footer bg-light">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary fw-semibold" style="background-color: var(--primary-color);">Actualizar en Supabase</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL SESIONES Y ALERTAS DESDE SUPABASE -->
+  <div class="modal fade" id="sesionesModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg rounded-4">
+        <div class="modal-header bg-light">
+          <h5 class="modal-title fw-bold text-dark"><i class="bi bi-laptop text-primary me-2"></i>Historial de Accesos (Supabase)</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-4" id="sesionesModalBody">
+          <div class="text-center text-muted small py-3">Cargando sesiones desde Supabase...</div>
+        </div>
+        <div class="modal-footer bg-light">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    const API_BASE = 'http://localhost:8089/api';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const user = JSON.parse(localStorage.getItem('a365_user') || '{"idUsuario":1}');
+      fetch(`${API_BASE}/usuarios/${user.idUsuario || 1}`)
+        .then(res => res.json())
+        .then(u => {
+          if (u && u.idUsuario) {
+            document.getElementById('twoFactorSwitch').checked = u.dobleFactorActivo !== false;
+            document.getElementById('emailSwitch').checked = u.alertaLoginActiva !== false;
+          }
+        })
+        .catch(() => {});
+
+      fetch(`${API_BASE}/config/smtp`)
+        .then(res => res.json())
+        .then(cfg => {
+          document.getElementById('smtpHostInput').value = cfg.host || 'smtp.gmail.com';
+          document.getElementById('smtpPortInput').value = cfg.port || 587;
+          document.getElementById('smtpUserInput').value = cfg.username || '';
+          const badge = document.getElementById('smtpStatusBadge');
+          if (cfg.configurado) {
+            badge.className = 'badge bg-success';
+            badge.innerText = 'SMTP Activo (' + cfg.username + ')';
+          } else {
+            badge.className = 'badge bg-warning text-dark';
+            badge.innerText = 'Pendiente configurar remitente';
+          }
+        })
+        .catch(() => {});
+    });
+
+    function guardarPreferenciasSupabase(e) {
+      e.preventDefault();
+      const user = JSON.parse(localStorage.getItem('a365_user') || '{"idUsuario":1}');
+      fetch(`${API_BASE}/usuarios/${user.idUsuario || 1}/preferencias`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          dobleFactorActivo: document.getElementById('twoFactorSwitch').checked,
+          alertaLoginActiva: document.getElementById('emailSwitch').checked
+        })
+      })
+        .then(res => res.json())
+        .then(data => showToast(data.mensaje || 'Preferencias actualizadas en Supabase', 'success'));
+    }
+
+    function cambiarClaveEnSupabase(e) {
+      e.preventDefault();
+      const actual = document.getElementById('passActualInput').value.trim();
+      const nueva = document.getElementById('passNuevaInput').value.trim();
+      const confirm = document.getElementById('passConfirmInput').value.trim();
+
+      if (nueva !== confirm) {
+        alert('La nueva contraseña y su confirmación no coinciden.');
+        return;
+      }
+
+      const user = JSON.parse(localStorage.getItem('a365_user') || '{"idUsuario":1}');
+      fetch(`${API_BASE}/usuarios/${user.idUsuario || 1}/cambiar-clave`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ passwordActual: actual, nuevaPassword: nueva })
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (!data.success) {
+            alert(data.error || 'No se pudo cambiar la contraseña.');
+            return;
+          }
+          bootstrap.Modal.getInstance(document.getElementById('cambiarClaveModal')).hide();
+          e.target.reset();
+          showToast(data.mensaje, 'success');
+        });
+    }
+
+    function cargarSesionesSupabase() {
+      const user = JSON.parse(localStorage.getItem('a365_user') || '{"idUsuario":1}');
+      const body = document.getElementById('sesionesModalBody');
+      body.innerHTML = '<div class="text-center text-muted small py-3">Consultando tabla sesiones_alertas...</div>';
+
+      fetch(`${API_BASE}/usuarios/${user.idUsuario || 1}/sesiones`)
+        .then(res => res.json())
+        .then(sesiones => {
+          body.innerHTML = '';
+          if (!Array.isArray(sesiones) || sesiones.length === 0) {
+            body.innerHTML = '<div class="text-center text-muted small py-3">No hay sesiones registradas aún.</div>';
+            return;
+          }
+          sesiones.forEach((s, idx) => {
+            body.innerHTML += `
+              <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded-3 mb-2">
+                <div class="d-flex align-items-center gap-3">
+                  <i class="bi bi-laptop fs-3 text-primary"></i>
+                  <div>
+                    <strong class="d-block small text-dark">${s.dispositivo || 'Navegador Web'}</strong>
+                    <span class="text-muted" style="font-size: 0.75rem;">IP: ${s.ip} • Fecha: ${s.fecha}</span>
+                  </div>
+                </div>
+                <span class="badge ${idx === 0 ? 'bg-success' : 'bg-secondary'}">${idx === 0 ? 'Sesión Actual' : 'Alerta enviada'}</span>
+              </div>
+            `;
+          });
+        });
+    }
+
+    function guardarSmtp(e) {
+      e.preventDefault();
+      const payload = {
+        host: document.getElementById('smtpHostInput').value.trim(),
+        port: document.getElementById('smtpPortInput').value.trim(),
+        username: document.getElementById('smtpUserInput').value.trim(),
+        password: document.getElementById('smtpPassInput').value.trim()
+      };
+
+      fetch(`${API_BASE}/config/smtp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+        .then(res => res.json())
+        .then(data => {
+          const badge = document.getElementById('smtpStatusBadge');
+          badge.className = 'badge bg-success';
+          badge.innerText = 'SMTP Activo (' + payload.username + ')';
+          showToast(data.mensaje, 'success');
+        });
+    }
+  </script>
+</body>
+</html>

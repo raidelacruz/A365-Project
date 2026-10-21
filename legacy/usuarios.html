@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro de Usuarios y Roles (Admin) | IMPULSA A365</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <div class="app-wrapper">
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <a href="dashboard.html" class="sidebar-brand">
+        <div class="brand-badge">A365</div>
+        <div class="brand-info">
+          <span class="brand-title">IMPULSA A365</span>
+          <span class="brand-subtitle">Panel Administrador</span>
+        </div>
+      </a>
+
+      <ul class="sidebar-menu">
+        <li class="nav-item">
+          <a href="dashboard.html" class="nav-link">
+            <i class="bi bi-grid-1x2-fill"></i>
+            <span>Inicio</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="tickets.html" class="nav-link">
+            <i class="bi bi-ticket-detailed-fill"></i>
+            <span>Tickets</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="incidencias.html" class="nav-link">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span>Incidencias</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="reportes.html" class="nav-link">
+            <i class="bi bi-bar-chart-line-fill"></i>
+            <span>Reportes</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="usuarios.html" class="nav-link active">
+            <i class="bi bi-people-fill"></i>
+            <span>Registro de usuarios</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="perfil.html" class="nav-link">
+            <i class="bi bi-person-circle"></i>
+            <span>Perfil</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="configuracion.html" class="nav-link">
+            <i class="bi bi-gear-fill"></i>
+            <span>Configuración</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <div>IMPULSA A365 &copy; 2026</div>
+        <small class="text-secondary">Conectado a Supabase</small>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+      <header class="top-navbar">
+        <div class="navbar-left">
+          <button class="sidebar-toggle-btn" id="sidebarToggleBtn">
+            <i class="bi bi-list"></i>
+          </button>
+          <div>
+            <h1 class="page-header-title">Gestión de Usuarios y Roles (Exclusivo Admin)</h1>
+            <small class="text-muted d-none d-sm-inline">Creación de cuentas y asignación de roles en Supabase PostgreSQL</small>
+          </div>
+        </div>
+
+        <div class="navbar-right">
+          <a href="index.html" class="btn btn-sm btn-outline-secondary d-none d-md-inline-flex align-items-center gap-1">
+            <i class="bi bi-globe"></i> Portal Cliente
+          </a>
+
+          <a href="perfil.html" class="user-profile-badge">
+            <div class="avatar-circle">GG</div>
+            <div class="user-meta d-none d-md-flex">
+              <span class="user-name">Grace Galán</span>
+              <span class="user-role">Administradora</span>
+            </div>
+          </a>
+
+          <a href="login.html" class="btn-logout" onclick="localStorage.removeItem('a365_user')">
+            <i class="bi bi-box-arrow-right"></i>
+            <span class="d-none d-sm-inline">Cerrar sesión</span>
+          </a>
+        </div>
+      </header>
+
+      <main class="page-body">
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+          <div>
+            <h4 class="fw-bold mb-1">Directorio Institucional de Usuarios</h4>
+            <p class="text-muted small mb-0"><span id="userCount">0</span> usuarios sincronizados con Supabase PostgreSQL</p>
+          </div>
+          <button class="btn btn-primary d-flex align-items-center gap-2 fw-semibold shadow-sm" data-bs-toggle="modal" data-bs-target="#nuevoUsuarioModal" style="background-color: var(--primary-color); border-color: var(--primary-color);">
+            <i class="bi bi-person-plus-fill"></i>
+            <span>+ Crear usuario y asignar rol</span>
+          </button>
+        </div>
+
+        <!-- BARRA DE BÚSQUEDA -->
+        <div class="card-custom mb-4">
+          <div class="card-custom-body p-3">
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+              <input type="text" id="searchUserInput" class="form-control border-start-0 ps-0" placeholder="Buscar por nombre, código institucional, correo, rol o departamento...">
+            </div>
+          </div>
+        </div>
+
+        <!-- TABLA DE USUARIOS EN VIVO DESDE SUPABASE -->
+        <div class="card-custom mb-0">
+          <div class="card-custom-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0" id="usersTable">
+                <thead class="table-light small text-secondary">
+                  <tr>
+                    <th class="ps-3 py-3">USUARIO</th>
+                    <th>CÓDIGO</th>
+                    <th>ROL ASIGNADO</th>
+                    <th>DEPARTAMENTO</th>
+                    <th>ESTADO</th>
+                    <th class="pe-3 text-end">ACCIONES</th>
+                  </tr>
+                </thead>
+                <tbody class="small" id="usersTableBody">
+                  <tr>
+                    <td colspan="6" class="text-center py-4 text-muted">Cargando usuarios desde Supabase...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- MODAL NUEVO USUARIO CON ASIGNACIÓN DE ROL Y CONTRASEÑA -->
+  <div class="modal fade" id="nuevoUsuarioModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg rounded-4">
+        <div class="modal-header bg-light">
+          <h5 class="modal-title fw-bold text-dark"><i class="bi bi-person-plus text-primary me-2"></i>Registrar Nuevo Usuario y Rol</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form onsubmit="crearNuevoUsuario(event)">
+          <div class="modal-body p-4">
+            <div class="row g-2 mb-3">
+              <div class="col-md-6">
+                <label class="form-label small fw-bold text-secondary">NOMBRES</label>
+                <input type="text" class="form-control" id="usrNombres" placeholder="Nombres" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-bold text-secondary">APELLIDOS</label>
+                <input type="text" class="form-control" id="usrApellidos" placeholder="Apellidos" required>
+              </div>
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-md-7">
+                <label class="form-label small fw-bold text-secondary">CORREO INSTITUCIONAL</label>
+                <input type="email" class="form-control" id="usrEmail" placeholder="usuario@impulsa365.com" required>
+              </div>
+              <div class="col-md-5">
+                <label class="form-label small fw-bold text-secondary">CONTRASEÑA INICIAL</label>
+                <input type="text" class="form-control" id="usrPassword" value="123456" required>
+              </div>
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-md-6">
+                <label class="form-label small fw-bold text-secondary">ROL EN EL SISTEMA</label>
+                <select class="form-select" id="usrRol" required>
+                  <option value="EMPLEADO" selected>EMPLEADO (Agente Soporte)</option>
+                  <option value="ADMINISTRADOR">ADMINISTRADOR (Control Total)</option>
+                  <option value="SUPERVISOR">SUPERVISOR (SLAs e Incidencias)</option>
+                  <option value="CLIENTE">CLIENTE (Portal Externo)</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-bold text-secondary">DEPARTAMENTO</label>
+                <input type="text" class="form-control" id="usrDepto" placeholder="Ej. Soporte / Tecnología" value="Soporte" required>
+              </div>
+            </div>
+
+            <div class="row g-2">
+              <div class="col-md-6">
+                <label class="form-label small fw-bold text-secondary">DNI / RUC</label>
+                <input type="text" class="form-control" id="usrDni" placeholder="8 u 11 dígitos" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-bold text-secondary">TELÉFONO</label>
+                <input type="text" class="form-control" id="usrTel" placeholder="987654321">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer bg-light">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary fw-semibold" style="background-color: var(--primary-color);">Guardar en Supabase</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL EDITAR USUARIO Y CAMBIAR ROL -->
+  <div class="modal fade" id="editarUsuarioModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg rounded-4">
+        <div class="modal-header bg-light">
+          <h5 class="modal-title fw-bold text-dark"><i class="bi bi-pencil-square text-primary me-2"></i>Editar Usuario y Rol</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form onsubmit="guardarEdicionUsuario(event)">
+          <input type="hidden" id="editUserId">
+          <div class="modal-body p-4">
+            <div class="row g-2 mb-3">
+              <div class="col-md-6">
+                <label class="form-label small fw-bold text-secondary">NOMBRES</label>
+                <input type="text" class="form-control" id="editNombres" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-bold text-secondary">APELLIDOS</label>
+                <input type="text" class="form-control" id="editApellidos">
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold text-secondary">CORREO</label>
+              <input type="email" class="form-control" id="editEmail" required>
+            </div>
+            <div class="row g-2">
+              <div class="col-md-6">
+                <label class="form-label small fw-bold text-secondary">CAMBIAR ROL</label>
+                <select class="form-select" id="editRol" required>
+                  <option value="ADMINISTRADOR">ADMINISTRADOR</option>
+                  <option value="SUPERVISOR">SUPERVISOR</option>
+                  <option value="EMPLEADO">EMPLEADO</option>
+                  <option value="CLIENTE">CLIENTE</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-bold text-secondary">DEPARTAMENTO</label>
+                <input type="text" class="form-control" id="editDepto" required>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer bg-light">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary fw-semibold" style="background-color: var(--primary-color);">Guardar Cambios</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    const API_USUARIOS = 'http://localhost:8089/api/usuarios';
+    let allUsersList = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Verificar que un empleado no entre al módulo exclusivo de Admin
+      const logged = JSON.parse(localStorage.getItem('a365_user') || 'null');
+      if (logged && (logged.rol || '').toUpperCase() === 'EMPLEADO') {
+        alert('Acceso restringido: Solo el Administrador puede gestionar usuarios y asignar roles.');
+        window.location.href = 'empleado.html';
+        return;
+      }
+      cargarUsuariosDesdeSupabase();
+
+      const searchInput = document.getElementById('searchUserInput');
+      if (searchInput) {
+        searchInput.addEventListener('input', () => renderTablaUsuarios(searchInput.value.toLowerCase()));
+      }
+    });
+
+    function cargarUsuariosDesdeSupabase() {
+      fetch(API_USUARIOS)
+        .then(res => res.json())
+        .then(data => {
+          allUsersList = Array.isArray(data) ? data : [];
+          document.getElementById('userCount').innerText = allUsersList.length;
+          renderTablaUsuarios('');
+        })
+        .catch(() => {
+          document.getElementById('usersTableBody').innerHTML =
+            '<tr><td colspan="6" class="text-center py-4 text-danger">No se pudo conectar con backend-a365 (http://localhost:8089).</td></tr>';
+        });
+    }
+
+    function renderTablaUsuarios(filtro) {
+      const tbody = document.getElementById('usersTableBody');
+      tbody.innerHTML = '';
+
+      const colors = ['#2563eb', '#0d9488', '#7c3aed', '#db2777', '#d97706', '#0284c7'];
+
+      allUsersList.forEach((u, idx) => {
+        const fullName = ((u.nombres || '') + ' ' + (u.apellidos || '')).trim();
+        const searchStr = (fullName + ' ' + u.codigoUsuario + ' ' + u.correo + ' ' + u.rol + ' ' + u.departamento).toLowerCase();
+        if (filtro && !searchStr.includes(filtro)) return;
+
+        const initials = ((u.nombres || 'U')[0] + ((u.apellidos || '')[0] || '')).toUpperCase();
+        const color = colors[idx % colors.length];
+
+        let roleBadgeClass = 'bg-light text-dark border';
+        if (u.rol === 'ADMINISTRADOR') roleBadgeClass = 'bg-primary text-white';
+        else if (u.rol === 'EMPLEADO') roleBadgeClass = 'bg-info text-dark';
+        else if (u.rol === 'SUPERVISOR') roleBadgeClass = 'bg-warning text-dark';
+
+        const estadoHtml = u.activo
+          ? '<span class="badge-status-activo">Activo</span>'
+          : '<span class="badge-status-inactivo">Inactivo</span>';
+
+        const toggleBtn = u.activo
+          ? `<a href="#" class="text-danger text-decoration-none fw-semibold" onclick="cambiarEstado(${u.idUsuario}, false); return false;">Desactivar</a>`
+          : `<a href="#" class="text-success text-decoration-none fw-semibold" onclick="cambiarEstado(${u.idUsuario}, true); return false;">Activar</a>`;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="ps-3">
+            <div class="d-flex align-items-center gap-2">
+              <div class="avatar-circle" style="width: 34px; height: 34px; font-size: 0.8rem; background: ${color};">${initials}</div>
+              <div>
+                <strong class="text-dark d-block">${fullName}</strong>
+                <span class="text-muted" style="font-size: 0.75rem;">${u.correo}</span>
+              </div>
+            </div>
+          </td>
+          <td class="fw-semibold text-secondary">${u.codigoUsuario || '-'}</td>
+          <td><span class="badge ${roleBadgeClass}">${u.rol}</span></td>
+          <td>${u.departamento || 'General'}</td>
+          <td>${estadoHtml}</td>
+          <td class="pe-3 text-end">
+            <a href="#" class="text-primary me-2 text-decoration-none fw-semibold" onclick="abrirModalEditar(${u.idUsuario}); return false;">Editar Rol</a>
+            ${toggleBtn}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function crearNuevoUsuario(e) {
+      e.preventDefault();
+      const payload = {
+        nombres: document.getElementById('usrNombres').value.trim(),
+        apellidos: document.getElementById('usrApellidos').value.trim(),
+        correo: document.getElementById('usrEmail').value.trim(),
+        password: document.getElementById('usrPassword').value.trim(),
+        rol: document.getElementById('usrRol').value,
+        departamento: document.getElementById('usrDepto').value.trim(),
+        dni: document.getElementById('usrDni').value.trim(),
+        telefono: document.getElementById('usrTel').value.trim()
+      };
+
+      fetch(API_USUARIOS, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (!data.success) {
+            alert(data.error || 'No se pudo crear el usuario.');
+            return;
+          }
+          bootstrap.Modal.getInstance(document.getElementById('nuevoUsuarioModal')).hide();
+          e.target.reset();
+          showToast(data.mensaje, 'success');
+          cargarUsuariosDesdeSupabase();
+        });
+    }
+
+    function abrirModalEditar(idUsuario) {
+      const u = allUsersList.find(item => item.idUsuario === idUsuario);
+      if (!u) return;
+      document.getElementById('editUserId').value = u.idUsuario;
+      document.getElementById('editNombres').value = u.nombres || '';
+      document.getElementById('editApellidos').value = u.apellidos || '';
+      document.getElementById('editEmail').value = u.correo || '';
+      document.getElementById('editRol').value = u.rol || 'EMPLEADO';
+      document.getElementById('editDepto').value = u.departamento || '';
+      new bootstrap.Modal(document.getElementById('editarUsuarioModal')).show();
+    }
+
+    function guardarEdicionUsuario(e) {
+      e.preventDefault();
+      const id = document.getElementById('editUserId').value;
+      const payload = {
+        nombres: document.getElementById('editNombres').value.trim(),
+        apellidos: document.getElementById('editApellidos').value.trim(),
+        correo: document.getElementById('editEmail').value.trim(),
+        rol: document.getElementById('editRol').value,
+        departamento: document.getElementById('editDepto').value.trim()
+      };
+
+      fetch(`${API_USUARIOS}/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+        .then(res => res.json())
+        .then(data => {
+          bootstrap.Modal.getInstance(document.getElementById('editarUsuarioModal')).hide();
+          showToast(data.mensaje || 'Usuario actualizado', 'success');
+          cargarUsuariosDesdeSupabase();
+        });
+    }
+
+    function cambiarEstado(idUsuario, nuevoEstado) {
+      fetch(`${API_USUARIOS}/${idUsuario}/estado`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ activo: nuevoEstado })
+      })
+        .then(res => res.json())
+        .then(data => {
+          showToast(data.mensaje, nuevoEstado ? 'success' : 'danger');
+          cargarUsuariosDesdeSupabase();
+        });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IMPULSA A365 S.A.C. - Portal de Clientes y Soporte</title>
+    <link rel="icon" type="image/jpeg" href="Imagenes/logo.jpg">
+    <link rel="stylesheet" href="css/cliente-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="light-mode">
+
+    <!-- BARRA DE ACCESIBILIDAD Y LECTURA FÁCIL (ESPECIAL ADULTOS Y ADULTOS MAYORES) -->
+    <div class="a11y-bar">
+        <div>
+            <i class="fa-solid fa-universal-access" style="color:#38bdf8; margin-right:6px;"></i>
+            <strong>Lectura Fácil y Accesibilidad:</strong> Ajusta el tamaño del texto o el color de fondo según tu comodidad
+        </div>
+        <div class="a11y-controls">
+            <span>Tamaño de letra:</span>
+            <button type="button" class="a11y-btn" onclick="setFontScale(1)">A (Normal)</button>
+            <button type="button" class="a11y-btn" onclick="setFontScale(1.12)">A+ (Grande)</button>
+            <button type="button" class="a11y-btn" onclick="setFontScale(1.25)">A++ (Muy Grande)</button>
+            <button type="button" class="a11y-btn" onclick="toggleThemeMode()" id="themeToggleBtn">
+                <i class="fa-solid fa-moon"></i> Cambiar a Modo Oscuro
+            </button>
+        </div>
+    </div>
+
+    <!-- BANNER FLOTANTE DE ALERTA DE CORREO (2FA / AVISO DE ACCESO) -->
+    <div id="emailAlertBanner" style="display:none; position:fixed; bottom:24px; right:24px; z-index:9999; max-width:440px; background:#0f172a; color:#f8fafc; border-left:6px solid #22c55e; border-radius:12px; padding:18px 22px; box-shadow:0 15px 35px rgba(0,0,0,0.45); font-size:1rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <strong style="color:#4ade80;"><i class="fa-solid fa-envelope-circle-check"></i> <span id="emailBannerTitle">Notificación enviada a tu correo</span></strong>
+            <span style="cursor:pointer; font-size:1.4rem; color:#94a3b8;" onclick="document.getElementById('emailAlertBanner').style.display='none'">&times;</span>
+        </div>
+        <div id="emailBannerBody" style="color:#e2e8f0; line-height:1.5;"></div>
+    </div>
+
+    <!-- BARRA DE NAVEGACIÓN PRINCIPAL -->
+    <header class="navbar">
+        <div class="logo-container">
+            <img src="Imagenes/logo.jpg" alt="Logo IMPULSA A365" class="brand-logo">
+            <span class="brand-name">IMPULSA <strong>A365</strong></span>
+        </div>
+        <nav class="nav-links">
+            <a href="#inicio" class="active"><i class="fa-solid fa-house"></i> Inicio</a>
+            <a href="#soporte"><i class="fa-solid fa-plus-circle"></i> Crear Solicitud</a>
+            <a href="#estado"><i class="fa-solid fa-list-check"></i> Mis Solicitudes y Mensajes</a>
+        </nav>
+        <div class="auth-buttons" id="authButtonsContainer">
+            <button class="btn-outline" onclick="openModal('loginModal')"><i class="fa-solid fa-right-to-bracket"></i> Iniciar Sesión</button>
+            <button class="btn-primary" onclick="openModal('registerModal')"><i class="fa-solid fa-user-plus"></i> Crear Cuenta</button>
+            <button class="btn-admin" onclick="window.location.href='login.html'"><i class="fa-solid fa-user-tie"></i> Acceso Personal</button>
+        </div>
+        <div id="userLoggedPanel" style="display: none; align-items: center; gap: 14px; flex-wrap: wrap;">
+            <span id="welcomeUserText" style="color: #16a34a; font-weight: 800; font-size: 1.05rem;"><i class="fa-solid fa-circle-user"></i> Hola, Cliente</span>
+            <button class="btn-admin" onclick="window.location.href='login.html'" title="Ir al login de Empleados/Admin"><i class="fa-solid fa-user-tie"></i> Personal</button>
+            <button class="btn-logout" onclick="logoutClient()"><i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión</button>
+        </div>
+    </header>
+
+    <main class="view-container">
+
+        <!-- GUÍA VISUAL INTUITIVA EN 3 PASOS -->
+        <div class="steps-guide">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <div>
+                    <strong style="font-size:1.05rem; display:block;">Ingresa a tu Cuenta</strong>
+                    <span style="color:var(--text-muted); font-size:0.95rem;">Inicia sesión o regístrate con tu correo personal.</span>
+                </div>
+            </div>
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <div>
+                    <strong style="font-size:1.05rem; display:block;">Envía tu Solicitud</strong>
+                    <span style="color:var(--text-muted); font-size:0.95rem;">Cuéntanos en qué necesitas ayuda en el formulario.</span>
+                </div>
+            </div>
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <div>
+                    <strong style="font-size:1.05rem; display:block;">Conversa con Soporte</strong>
+                    <span style="color:var(--text-muted); font-size:0.95rem;">Lee las respuestas del técnico y escríbele mensajes.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hero Section -->
+        <section id="inicio" class="hero-section">
+            <div class="hero-content">
+                <h1>Centro de Atención y Soporte al Cliente</h1>
+                <p>Bienvenido al portal de ayuda de <strong>IMPULSA A365 S.A.C.</strong> Aquí puedes registrar cualquier consulta o problema técnico de forma sencilla, conversar directamente con el especialista asignado y revisar el avance de tu atención paso a paso.</p>
+
+                <div style="margin-top: 1.8rem; padding: 1.4rem; background: var(--card-bg); border: 2px solid var(--border-color); border-radius: 14px; box-shadow: var(--shadow-soft);">
+                    <h4 style="margin-bottom: 0.6rem; font-size: 1.15rem;"><i class="fa-solid fa-headset" style="color:var(--primary-blue); margin-right:8px;"></i> ¿Necesitas ayuda para usar el portal?</h4>
+                    <p style="font-size: 0.98rem; margin-bottom: 0;">Si aún no tienes cuenta, presiona el botón azul <strong>"Crear Cuenta"</strong> arriba a la derecha. Si ya enviaste una solicitud, baja a la sección <strong>"Mis Solicitudes y Mensajes"</strong> para ver la respuesta de nuestro equipo.</p>
+                </div>
+            </div>
+
+            <!-- Formulario de Ticket -->
+            <div class="hero-card-form" id="soporte">
+                <h3><i class="fa-solid fa-ticket"></i> Registrar Nueva Solicitud de Ayuda</h3>
+                <form id="ticketForm" onsubmit="handleTicketSubmit(event)">
+                    <div class="form-group">
+                        <label for="ticketAsunto">1. ¿Cuál es el motivo o resumen de tu consulta?</label>
+                        <input type="text" id="ticketAsunto" placeholder="Ejemplo: No puedo ingresar al sistema de facturación" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="ticketCategoria">2. Tipo de ayuda</label>
+                            <select id="ticketCategoria" required>
+                                <option value="">Seleccione una opción...</option>
+                                <option value="Software">Programas y Aplicativos (Software)</option>
+                                <option value="Accesos">Contraseñas, Permisos y Accesos</option>
+                                <option value="VPN">Internet, Red y Conexión VPN</option>
+                                <option value="Facturacion">Facturación y Comprobantes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="ticketPrioridad">3. Nivel de urgencia</label>
+                            <select id="ticketPrioridad" required>
+                                <option value="Baja">Baja (Consulta general)</option>
+                                <option value="Media" selected>Media (Normal)</option>
+                                <option value="Alta">Alta (Importante)</option>
+                                <option value="Crítica">Crítica (Muy urgente)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="ticketDesc">4. Cuéntanos con detalle qué sucede</label>
+                        <textarea id="ticketDesc" rows="4" placeholder="Escribe aquí con calma los detalles de tu problema para ayudarte mejor..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn-submit"><i class="fa-solid fa-paper-plane"></i> Enviar Solicitud a Soporte</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Sección de Solicitudes y Mensajes -->
+        <section id="estado" class="tickets-section">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px;">
+                <div>
+                    <h2>Mis Solicitudes y Conversaciones</h2>
+                    <p>Revisa el estado de tus tickets y presiona <strong>"Ver / Responder Mensajes"</strong> para conversar con el técnico.</p>
+                </div>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;" id="clientFilterTabs">
+                    <button type="button" class="btn-primary" id="tabBtnPendientes" onclick="cambiarFiltroCliente('pendientes')">
+                        <i class="fa-solid fa-clock"></i> En Atención / Pendientes (<span id="countCliPend">0</span>)
+                    </button>
+                    <button type="button" class="btn-outline" id="tabBtnResueltos" onclick="cambiarFiltroCliente('resueltos')">
+                        <i class="fa-solid fa-circle-check"></i> Resueltos / Finalizados (<span id="countCliRes">0</span>)
+                    </button>
+                    <button id="refreshTicketsBtn" class="btn-outline" style="display:none;" onclick="cargarTicketsDespuesDeAccion()">
+                        <i class="fa-solid fa-rotate"></i> Actualizar
+                    </button>
+                </div>
+            </div>
+
+            <div id="noSessionMessage" style="text-align: center; padding: 3.5rem; background: var(--card-bg); border-radius: 16px; border: 2px dashed var(--border-color); box-shadow: var(--shadow-soft);">
+                <i class="fa-solid fa-lock" style="font-size: 2.8rem; color: var(--primary-blue); margin-bottom: 1rem;"></i>
+                <p style="color: var(--text-light); font-size: 1.15rem; font-weight:700;">Inicia sesión para ver tus solicitudes y mensajes con soporte</p>
+                <p style="color: var(--text-muted); font-size: 1rem;">Por tu seguridad, protegemos tus solicitudes con verificación de 2 pasos.</p>
+                <button class="btn-primary" style="margin-top: 1rem;" onclick="openModal('loginModal')"><i class="fa-solid fa-right-to-bracket"></i> Iniciar Sesión Ahora</button>
+            </div>
+
+            <div class="table-responsive" id="ticketsTableContainer" style="display: none;">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Asunto de tu Solicitud</th>
+                            <th>Categoría</th>
+                            <th>Urgencia</th>
+                            <th>Estado Actual</th>
+                            <th>Fecha</th>
+                            <th>Conversación con Soporte</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dynamicTicketsBody"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL 1: LOGIN CLIENTE -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('loginModal')" title="Cerrar ventana">&times;</span>
+            <h2><i class="fa-solid fa-shield-halved" style="color:var(--primary-blue);"></i> Iniciar Sesión</h2>
+            <p class="subtitle-modal">Ingresa tu correo electrónico y contraseña para entrar a tu portal</p>
+            <form onsubmit="handleClientLogin(event)">
+                <div class="form-group">
+                    <label>Correo Electrónico</label>
+                    <input type="email" id="loginEmail" placeholder="tucorreo@gmail.com / outlook.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="loginPass" placeholder="Escribe tu contraseña" required>
+                </div>
+                <div style="text-align:right; margin-bottom:16px;">
+                    <a href="#" onclick="closeModal('loginModal'); openModal('recoverModal'); return false;" style="color:var(--primary-blue); font-size:0.98rem; font-weight:700; text-decoration:underline;">
+                        ¿Olvidaste tu contraseña? Haz clic aquí
+                    </a>
+                </div>
+                <button type="submit" class="btn-primary full-width" id="btnClientLoginSubmit">Continuar <i class="fa-solid fa-arrow-right"></i></button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: VERIFICACIÓN DE DOBLE FACTOR (2FA OTP) -->
+    <div id="twoFactorModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('twoFactorModal')">&times;</span>
+            <h2><i class="fa-solid fa-envelope-open-text" style="color:var(--primary-blue);"></i> Verificación de Seguridad</h2>
+            <p class="subtitle-modal" id="twoFactorSubtitle">Hemos enviado un código de 6 números a tu correo electrónico.</p>
+
+            <div id="demoOtpBox" style="background:rgba(2,132,199,0.12); border:2px dashed var(--primary-blue); border-radius:12px; padding:14px; margin-bottom:16px; text-align:center;">
+                <div style="font-size:0.9rem; color:var(--text-muted); font-weight:700;"><i class="fa-solid fa-inbox"></i> Código de verificación generado:</div>
+                <div id="demoOtpValue" style="font-size:1.8rem; font-weight:800; letter-spacing:6px; color:var(--primary-blue); margin-top:4px;">------</div>
+            </div>
+
+            <form onsubmit="handleVerify2FA(event)">
+                <div class="form-group">
+                    <label>Escribe los 6 números del código</label>
+                    <input type="text" id="otpCodeInput" placeholder="Ej. 482910" maxlength="6" style="text-align:center; font-size:1.4rem; letter-spacing:8px; font-weight:800;" required>
+                </div>
+                <button type="submit" class="btn-primary full-width"><i class="fa-solid fa-check-double"></i> Confirmar y Entrar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 3: REGISTRO CLIENTE -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('registerModal')">&times;</span>
+            <h2><i class="fa-solid fa-user-plus" style="color:var(--primary-blue);"></i> Crear Cuenta de Cliente</h2>
+            <p class="subtitle-modal">Completa tus datos de forma sencilla para registrarte</p>
+            <form onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label>Nombre Completo o Empresa</label>
+                    <input type="text" id="regRazon" placeholder="Ej. Juan Pérez o Empresa S.A.C." required>
+                </div>
+                <div class="form-group">
+                    <label>Número de DNI o RUC</label>
+                    <input type="text" id="regDoc" placeholder="8 dígitos (DNI) u 11 dígitos (RUC)" required>
+                </div>
+                <div class="form-group">
+                    <label>Teléfono o Celular</label>
+                    <input type="text" id="regTel" placeholder="Ej. 987 654 321">
+                </div>
+                <div class="form-group">
+                    <label>Tu Correo Electrónico (Gmail, Outlook, etc.)</label>
+                    <input type="email" id="regEmail" placeholder="tucorreo@gmail.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Crea una Contraseña</label>
+                    <input type="password" id="regPass" placeholder="Mínimo 4 caracteres" required>
+                </div>
+                <button type="submit" class="btn-primary full-width"><i class="fa-solid fa-check"></i> Registrar mi Cuenta</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 4: RECUPERACIÓN DE CONTRASEÑA POR CORREO -->
+    <div id="recoverModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('recoverModal')">&times;</span>
+            <h2><i class="fa-solid fa-key" style="color:var(--brand-red);"></i> Recuperar Contraseña</h2>
+            <p class="subtitle-modal">Escribe tu correo y te enviaremos un código para cambiar tu contraseña</p>
+
+            <form id="recoverStep1Form" onsubmit="handleRecoverStep1(event)">
+                <div class="form-group">
+                    <label>Tu Correo Electrónico registrado</label>
+                    <input type="email" id="recoverEmailInput" placeholder="tucorreo@gmail.com" required>
+                </div>
+                <button type="submit" class="btn-primary full-width">Enviar Código a mi Correo</button>
+            </form>
+
+            <form id="recoverStep2Form" onsubmit="handleRecoverStep2(event)" style="display:none; margin-top:16px;">
+                <div id="recoverDemoBox" style="background:rgba(220,38,38,0.12); border:2px dashed var(--brand-red); border-radius:12px; padding:12px; margin-bottom:14px; text-align:center;">
+                    <div style="font-size:0.9rem; font-weight:700;"><i class="fa-solid fa-envelope"></i> Código de invitación enviado:</div>
+                    <div id="recoverDemoCode" style="font-size:1.6rem; font-weight:800; letter-spacing:5px; color:var(--brand-red);">------</div>
+                </div>
+                <div class="form-group">
+                    <label>Código de 6 números recibido</label>
+                    <input type="text" id="recoverOtpInput" placeholder="Código de 6 dígitos" required>
+                </div>
+                <div class="form-group">
+                    <label>Escribe tu Nueva Contraseña</label>
+                    <input type="password" id="recoverNewPassInput" placeholder="Nueva contraseña" required>
+                </div>
+                <button type="submit" class="btn-submit full-width">Guardar Nueva Contraseña</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 5: CONVERSACIÓN / HILO DE MENSAJES ENTRE CLIENTE Y SOPORTE -->
+    <div id="clientChatModal" class="modal">
+        <div class="modal-content" style="max-width: 620px;">
+            <span class="close" onclick="closeModal('clientChatModal')">&times;</span>
+            <h2 style="font-size:1.35rem; margin-bottom:4px;">
+                <i class="fa-solid fa-comments" style="color:var(--primary-blue);"></i>
+                Conversación del Ticket <span id="chatModalCode" style="color:var(--primary-blue);">#TK</span>
+            </h2>
+            <p class="subtitle-modal" id="chatModalSubject" style="font-weight:700; margin-bottom:12px;">Asunto del ticket</p>
+
+            <!-- Hilo de mensajes -->
+            <div class="chat-thread-box" id="clientChatThread">
+                <div style="text-align:center; color:var(--text-muted);">Cargando mensajes...</div>
+            </div>
+
+            <!-- Formulario para que el cliente responda a soporte -->
+            <form onsubmit="enviarMensajeDesdeCliente(event)">
+                <div class="form-group" style="margin-bottom:0.8rem;">
+                    <label for="clientReplyInput">Escribe un mensaje o respuesta para el técnico de soporte:</label>
+                    <textarea id="clientReplyInput" rows="2" placeholder="Escribe aquí tu mensaje..." required></textarea>
+                </div>
+                <div style="display:flex; gap:10px; justify-content:flex-end;">
+                    <button type="button" class="btn-outline" onclick="closeModal('clientChatModal')">Cerrar</button>
+                    <button type="submit" class="btn-primary"><i class="fa-solid fa-paper-plane"></i> Enviar Mensaje</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        var BACKEND_URL = 'http://localhost:8089/api';
+        var currentUser = null;
+        var pending2FAUserId = null;
+        var clientTickets = [];
+        var filtroEstadoCliente = 'pendientes'; // 'pendientes' o 'resueltos'
+        var activeClientTicketId = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var savedScale = localStorage.getItem('a365_font_scale');
+            if (savedScale) setFontScale(parseFloat(savedScale));
+
+            var savedTheme = localStorage.getItem('a365_client_theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.remove('light-mode');
+                actualizarTextoBotonTema();
+            }
+
+            var saved = localStorage.getItem('a365_cliente_session');
+            if (saved) {
+                try {
+                    currentUser = JSON.parse(saved);
+                    activarPanelClienteLogueado();
+                } catch (e) {}
+            }
+        });
+
+        function setFontScale(scale) {
+            document.documentElement.style.setProperty('--font-scale', scale);
+            localStorage.setItem('a365_font_scale', scale);
+        }
+
+        function toggleThemeMode() {
+            document.body.classList.toggle('light-mode');
+            var isLight = document.body.classList.contains('light-mode');
+            localStorage.setItem('a365_client_theme', isLight ? 'light' : 'dark');
+            actualizarTextoBotonTema();
+        }
+
+        function actualizarTextoBotonTema() {
+            var btn = document.getElementById('themeToggleBtn');
+            var isLight = document.body.classList.contains('light-mode');
+            btn.innerHTML = isLight
+                ? '<i class="fa-solid fa-moon"></i> Modo Oscuro'
+                : '<i class="fa-solid fa-sun"></i> Modo Claro (Lectura Fácil)';
+        }
+
+        function showEmailBanner(title, htmlText) {
+            var banner = document.getElementById('emailAlertBanner');
+            document.getElementById('emailBannerTitle').innerText = title;
+            document.getElementById('emailBannerBody').innerHTML = htmlText;
+            banner.style.display = 'block';
+            setTimeout(function() {
+                banner.style.display = 'none';
+            }, 9000);
+        }
+
+        function openModal(id) {
+            var m = document.getElementById(id);
+            if (m) m.style.display = 'flex';
+        }
+
+        function closeModal(id) {
+            var m = document.getElementById(id);
+            if (m) m.style.display = 'none';
+        }
+
+        function handleClientLogin(e) {
+            e.preventDefault();
+            var email = document.getElementById('loginEmail').value.trim();
+            var pass = document.getElementById('loginPass').value.trim();
+
+            fetch(BACKEND_URL + '/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ identificador: email, password: pass })
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                if (!data.success) {
+                    alert(data.error || 'Credenciales inválidas.');
+                    return;
+                }
+                pending2FAUserId = data.idUsuario;
+                closeModal('loginModal');
+
+                document.getElementById('twoFactorSubtitle').innerText = data.mensaje || ('Código enviado a ' + data.correo);
+                if (data.smtpEnviado) {
+                    document.getElementById('demoOtpBox').style.display = 'none';
+                    document.getElementById('otpCodeInput').value = '';
+                } else {
+                    document.getElementById('demoOtpBox').style.display = 'block';
+                    document.getElementById('demoOtpValue').innerText = data.codigoDemo || '------';
+                    document.getElementById('otpCodeInput').value = data.codigoDemo || '';
+                }
+                openModal('twoFactorModal');
+
+                showEmailBanner('Código 2FA enviado a ' + data.correo,
+                    'Revisa tu bandeja de correo para ver el código de verificación de 6 dígitos.');
+            })
+            .catch(function() {
+                alert('No se pudo conectar con el Backend en http://localhost:8089. Ejecuta mvn spring-boot:run en backend-a365.');
+            });
+        }
+
+        function handleVerify2FA(e) {
+            e.preventDefault();
+            var codigo = document.getElementById('otpCodeInput').value.trim();
+
+            fetch(BACKEND_URL + '/auth/verify-2fa', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    idUsuario: pending2FAUserId,
+                    codigoOtp: codigo,
+                    dispositivo: navigator.userAgent.substring(0, 80)
+                })
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                if (!data.success) {
+                    alert(data.error || 'Código 2FA incorrecto.');
+                    return;
+                }
+                closeModal('twoFactorModal');
+                currentUser = data.usuario;
+                localStorage.setItem('a365_cliente_session', JSON.stringify(currentUser));
+                activarPanelClienteLogueado();
+
+                showEmailBanner('Aviso de Seguridad enviado a tu correo',
+                    'Hola <strong>' + currentUser.nombres + '</strong>, enviamos un aviso a <strong>' + currentUser.correo + '</strong> confirmando el acceso a tu cuenta.');
+            })
+            .catch(function() {
+                alert('Error al verificar el código 2FA.');
+            });
+        }
+
+        function activarPanelClienteLogueado() {
+            document.getElementById('authButtonsContainer').style.display = 'none';
+            document.getElementById('userLoggedPanel').style.display = 'flex';
+            document.getElementById('welcomeUserText').innerHTML = '<i class="fa-solid fa-circle-user"></i> Hola, ' + (currentUser.nombres || currentUser.correo);
+
+            document.getElementById('noSessionMessage').style.display = 'none';
+            document.getElementById('ticketsTableContainer').style.display = 'block';
+            document.getElementById('refreshTicketsBtn').style.display = 'inline-flex';
+
+            cargarTicketsDespuesDeAccion();
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            var payload = {
+                razonSocial: document.getElementById('regRazon').value.trim(),
+                documento: document.getElementById('regDoc').value.trim(),
+                telefono: document.getElementById('regTel').value.trim(),
+                correo: document.getElementById('regEmail').value.trim(),
+                password: document.getElementById('regPass').value.trim()
+            };
+
+            fetch(BACKEND_URL + '/auth/register-cliente', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                if (!data.success) {
+                    alert(data.error || 'No se pudo registrar el cliente.');
+                    return;
+                }
+                alert('¡Tu cuenta fue creada con éxito! Ahora ingresa para verificar tu correo.');
+                closeModal('registerModal');
+                document.getElementById('loginEmail').value = payload.correo;
+                document.getElementById('loginPass').value = payload.password;
+                openModal('loginModal');
+            })
+            .catch(function() {
+                alert('Error al conectar con el servidor backend.');
+            });
+        }
+
+        function handleRecoverStep1(e) {
+            e.preventDefault();
+            var correo = document.getElementById('recoverEmailInput').value.trim();
+
+            fetch(BACKEND_URL + '/auth/recuperar-clave', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ correo: correo })
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                if (!data.success) {
+                    alert(data.error || 'Correo no encontrado.');
+                    return;
+                }
+                document.getElementById('recoverStep2Form').style.display = 'block';
+                document.getElementById('recoverDemoCode').innerText = data.codigoDemo;
+                document.getElementById('recoverOtpInput').value = data.codigoDemo;
+
+                showEmailBanner('Invitación enviada a ' + correo,
+                    'Se envió una invitación a tu correo para restablecer tu contraseña.');
+            });
+        }
+
+        function handleRecoverStep2(e) {
+            e.preventDefault();
+            var correo = document.getElementById('recoverEmailInput').value.trim();
+            var codigoOtp = document.getElementById('recoverOtpInput').value.trim();
+            var nuevaPassword = document.getElementById('recoverNewPassInput').value.trim();
+
+            fetch(BACKEND_URL + '/auth/restablecer-clave', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ correo: correo, codigoOtp: codigoOtp, nuevaPassword: nuevaPassword })
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                if (!data.success) {
+                    alert(data.error || 'No se pudo cambiar la contraseña.');
+                    return;
+                }
+                alert(data.mensaje);
+                document.getElementById('recoverStep2Form').style.display = 'none';
+                closeModal('recoverModal');
+                document.getElementById('loginEmail').value = correo;
+                document.getElementById('loginPass').value = nuevaPassword;
+                openModal('loginModal');
+            });
+        }
+
+        function cambiarFiltroCliente(modo) {
+            filtroEstadoCliente = modo;
+            var btnP = document.getElementById('tabBtnPendientes');
+            var btnR = document.getElementById('tabBtnResueltos');
+            if (modo === 'pendientes') {
+                btnP.className = 'btn-primary';
+                btnR.className = 'btn-outline';
+            } else {
+                btnP.className = 'btn-outline';
+                btnR.className = 'btn-primary';
+            }
+            renderTickets();
+        }
+
+        function cargarTicketsDespuesDeAccion() {
+            if (!currentUser) return;
+            fetch(BACKEND_URL + '/tickets?idUsuario=' + currentUser.idUsuario)
+                .then(function(response) {
+                    if (response.ok) return response.json();
+                    return [];
+                })
+                .then(function(data) {
+                    clientTickets = Array.isArray(data) ? data : [];
+                    renderTickets();
+                })
+                .catch(function() {
+                    clientTickets = [];
+                    renderTickets();
+                });
+        }
+
+        function logoutClient() {
+            currentUser = null;
+            clientTickets = [];
+            localStorage.removeItem('a365_cliente_session');
+            document.getElementById('authButtonsContainer').style.display = 'flex';
+            document.getElementById('userLoggedPanel').style.display = 'none';
+            document.getElementById('noSessionMessage').style.display = 'block';
+            document.getElementById('ticketsTableContainer').style.display = 'none';
+            document.getElementById('refreshTicketsBtn').style.display = 'none';
+        }
+
+        function renderTickets() {
+            var tbody = document.getElementById('dynamicTicketsBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            var pendientes = clientTickets.filter(function(t) {
+                return t.estado !== 'RESUELTO' && t.estado !== 'CERRADO' && t.estado !== 'CANCELADO';
+            });
+            var resueltos = clientTickets.filter(function(t) {
+                return t.estado === 'RESUELTO' || t.estado === 'CERRADO' || t.estado === 'CANCELADO';
+            });
+
+            document.getElementById('countCliPend').innerText = pendientes.length;
+            document.getElementById('countCliRes').innerText = resueltos.length;
+
+            var listaMostrar = filtroEstadoCliente === 'pendientes' ? pendientes : resueltos;
+
+            if (listaMostrar.length === 0) {
+                var msgVacio = filtroEstadoCliente === 'pendientes'
+                    ? 'No tienes solicitudes pendientes en este momento.'
+                    : 'Aún no tienes solicitudes marcadas como resueltas.';
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2.5rem; font-size: 1.05rem;">' + msgVacio + '</td></tr>';
+                return;
+            }
+
+            listaMostrar.forEach(function(t) {
+                var codigoTxt = (t.codigo || 'TK-000').replace('#', '');
+                var asuntoTxt = t.asunto || 'Sin Asunto';
+                var catTxt = t.categoria || 'General';
+                var prioTxt = t.prioridad || 'Media';
+                var prioClass = prioTxt.toLowerCase();
+                var estadoTxt = t.estado || 'ABIERTO';
+                var fechaTxt = t.fecha || '';
+
+                var statusBg = 'rgba(245, 158, 11, 0.15)';
+                var statusColor = '#d97706';
+                if (estadoTxt === 'RESUELTO' || estadoTxt === 'CERRADO') {
+                    statusBg = 'rgba(22, 163, 74, 0.15)';
+                    statusColor = '#16a34a';
+                } else if (estadoTxt === 'EN_PROCESO') {
+                    statusBg = 'rgba(2, 132, 199, 0.15)';
+                    statusColor = '#0284c7';
+                } else if (estadoTxt === 'CANCELADO') {
+                    statusBg = 'rgba(220, 38, 38, 0.15)';
+                    statusColor = '#dc2626';
+                }
+
+                var asuntoSafe = asuntoTxt.replace(/'/g, "\\'");
+                var tr = document.createElement('tr');
+                tr.innerHTML = '<td><strong>#' + codigoTxt + '</strong></td>' +
+                             '<td><strong>' + asuntoTxt + '</strong></td>' +
+                             '<td>' + catTxt + '</td>' +
+                             '<td><span class="badge badge-' + prioClass + '">' + prioTxt + '</span></td>' +
+                             '<td><span class="status-pill" style="background:' + statusBg + '; border:2px solid ' + statusColor + '; color:' + statusColor + ';">' + estadoTxt + '</span></td>' +
+                             '<td>' + fechaTxt + '</td>' +
+                             '<td><button type="button" class="btn-chat" onclick="abrirChatCliente(' + t.idTicket + ', \'' + codigoTxt + '\', \'' + asuntoSafe + '\')"><i class="fa-solid fa-comments"></i> Ver / Responder Mensajes</button></td>';
+                tbody.appendChild(tr);
+            });
+        }
+
+        // ABRIR MODAL DE CONVERSACIÓN ENTRE EL CLIENTE Y SOPORTE
+        function abrirChatCliente(idTicket, codigo, asunto) {
+            activeClientTicketId = idTicket;
+            document.getElementById('chatModalCode').innerText = '#' + codigo;
+            document.getElementById('chatModalSubject').innerText = asunto;
+            openModal('clientChatModal');
+            cargarMensajesDeTicketCliente(idTicket);
+        }
+
+        function cargarMensajesDeTicketCliente(idTicket) {
+            var box = document.getElementById('clientChatThread');
+            box.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:1rem;">Cargando conversación con soporte...</div>';
+
+            fetch(BACKEND_URL + '/tickets/' + idTicket + '/mensajes')
+                .then(function(res) { return res.json(); })
+                .then(function(mensajes) {
+                    box.innerHTML = '';
+                    if (!Array.isArray(mensajes) || mensajes.length === 0) {
+                        box.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:1rem;">Aún no hay mensajes en esta solicitud. Escribe abajo para enviar un mensaje al técnico.</div>';
+                        return;
+                    }
+                    mensajes.forEach(function(m) {
+                        var rolLower = (m.autorRol || '').toLowerCase();
+                        var esCliente = rolLower.includes('cliente') || rolLower.includes('solicitante');
+                        var bubbleClass = esCliente ? 'cliente' : 'soporte';
+                        var icono = esCliente ? '<i class="fa-solid fa-user"></i> ' : '<i class="fa-solid fa-headset"></i> ';
+
+                        var div = document.createElement('div');
+                        div.className = 'chat-bubble ' + bubbleClass;
+                        div.innerHTML =
+                            '<div style="font-size:0.82rem; font-weight:700; opacity:0.9; margin-bottom:4px; display:flex; justify-content:space-between; gap:12px;">' +
+                                '<span>' + icono + (m.autorNombre || 'Usuario') + ' (' + (m.autorRol || 'Soporte') + ')</span>' +
+                                '<span>' + (m.fecha || '') + '</span>' +
+                            '</div>' +
+                            '<div>' + m.contenido + '</div>';
+                        box.appendChild(div);
+                    });
+                    box.scrollTop = box.scrollHeight;
+                });
+        }
+
+        function enviarMensajeDesdeCliente(e) {
+            e.preventDefault();
+            var input = document.getElementById('clientReplyInput');
+            var texto = input.value.trim();
+            if (!texto || !activeClientTicketId || !currentUser) return;
+
+            fetch(BACKEND_URL + '/tickets/' + activeClientTicketId + '/mensajes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    idUsuario: currentUser.idUsuario,
+                    autorNombre: currentUser.nombres || currentUser.correo,
+                    autorRol: 'Cliente',
+                    contenido: texto
+                })
+            })
+            .then(function(res) { return res.json(); })
+            .then(function() {
+                input.value = '';
+                cargarMensajesDeTicketCliente(activeClientTicketId);
+            });
+        }
+
+        function handleTicketSubmit(e) {
+            e.preventDefault();
+            if (!currentUser) {
+                alert('Por favor, inicia sesión primero para poder registrar tu solicitud.');
+                openModal('loginModal');
+                return;
+            }
+
+            var ticketData = {
+                idUsuario: currentUser.idUsuario,
+                solicitanteNombre: currentUser.nombres,
+                asunto: document.getElementById('ticketAsunto').value,
+                categoria: document.getElementById('ticketCategoria').value,
+                prioridad: document.getElementById('ticketPrioridad').value,
+                descripcion: document.getElementById('ticketDesc').value
+            };
+
+            fetch(BACKEND_URL + '/tickets', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(ticketData)
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(resultado) {
+                if (resultado.success) {
+                    alert('¡Tu solicitud #' + resultado.codigoTicket + ' fue enviada con éxito! Puedes verla y conversar con soporte en la tabla de abajo.');
+                    e.target.reset();
+                    cambiarFiltroCliente('pendientes');
+                    cargarTicketsDespuesDeAccion();
+                } else {
+                    alert('Error: ' + (resultado.error || 'No se pudo guardar el ticket.'));
+                }
+            })
+            .catch(function() {
+                alert('No se pudo conectar con el servidor backend en http://localhost:8089.');
+            });
+        }
+    </script>
+</body>
+</html>

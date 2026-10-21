@@ -3,35 +3,73 @@
    Estilos Generales inspirados en los prototipos de Figma de Avance 2
    ========================================================================== */
 
+@import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+
 :root {
+  --font-scale: 1;
   --primary-color: #0f172a;       /* Navy oscuro para sidebar y elementos principales */
   --primary-light: #1e293b;       /* Navy medio para hover de navegación */
-  --primary-accent: #2563eb;      /* Azul de acción y enlaces */
-  --primary-accent-hover: #1d4ed8;
+  --primary-accent: #0284c7;      /* Azul accesible de alto contraste */
+  --primary-accent-hover: #0369a1;
   --brand-red: #dc2626;           /* Rojo institucional A365 */
   --brand-red-hover: #b91c1c;
   --brand-orange: #ea580c;        /* Naranja avisos / pendientes */
   --brand-green: #16a34a;         /* Verde éxito / resuelto / activo */
   --brand-yellow: #ca8a04;        /* Amarillo intermedio */
-  --bg-light: #f8fafc;            /* Fondo gris claro general */
+  --bg-light: #f0f9ff;            /* Fondo claro suave de descanso visual */
   --card-bg: #ffffff;
   --text-dark: #0f172a;
-  --text-muted: #64748b;
-  --border-color: #e2e8f0;
-  --sidebar-width: 260px;
+  --text-muted: #475569;          /* Mayor contraste para lectura de adultos mayores */
+  --border-color: #cbd5e1;
+  --sidebar-width: 270px;
 }
 
 * {
   box-sizing: border-box;
 }
 
+html {
+  font-size: calc(16.5px * var(--font-scale, 1));
+  scroll-behavior: smooth;
+}
+
 body {
-  font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family: 'Atkinson Hyperlegible', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   background-color: var(--bg-light);
   color: var(--text-dark);
+  line-height: 1.6;
   margin: 0;
   padding: 0;
   min-height: 100vh;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #0284c7 !important;
+  outline-offset: 2px;
+}
+
+.btn, .form-control, .form-select {
+  min-height: 45px;
+  font-size: 0.96rem;
+  border-radius: 10px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.card-custom, .kpi-card {
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  border-radius: 16px !important;
+}
+
+.card-custom:hover, .kpi-card:hover {
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.09);
 }
 
 /* ==========================================
@@ -560,20 +598,25 @@ body {
 }
 
 /* ==========================================
-   VISTA DE LOGIN (SPLIT SCREEN)
+   VISTA DE LOGIN Y RECUPERACIÓN (SPLIT SCREEN MODERNO)
    ========================================== */
 .login-page-wrapper {
   min-height: 100vh;
-  display: flex;
-  background-color: #ffffff;
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(420px, 540px) 1fr;
+  background-color: #f8fafc;
 }
 
 .login-form-col {
-  flex: 1;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: center;
-  padding: 3rem 2rem;
+  align-items: center;
+  padding: 2.5rem 2.25rem;
+  background-color: #ffffff;
+  box-shadow: 10px 0 35px rgba(15, 23, 42, 0.05);
+  z-index: 2;
 }
 
 .login-form-container {
@@ -581,27 +624,87 @@ body {
   max-width: 440px;
 }
 
-.login-hero-col {
-  flex: 1.15;
-  background: linear-gradient(145deg, #0f172a 0%, #1e293b 50%, #0d1b2a 100%);
+.login-hero-col,
+.login-banner-col {
+  background: radial-gradient(circle at 20% 20%, rgba(2, 132, 199, 0.28) 0%, transparent 45%),
+              radial-gradient(circle at 85% 80%, rgba(220, 38, 38, 0.22) 0%, transparent 45%),
+              linear-gradient(135deg, #090d16 0%, #0f172a 52%, #1e293b 100%);
   color: #ffffff;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 4rem;
+  align-items: center;
+  padding: 3.5rem;
   position: relative;
   overflow: hidden;
 }
 
-.login-hero-col::before {
-  content: "";
-  position: absolute;
-  top: -50px;
-  right: -50px;
-  width: 300px;
-  height: 300px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(37, 99, 235, 0.25) 0%, transparent 70%);
+.login-banner-card {
+  width: 100%;
+  max-width: 560px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 24px;
+  padding: 2.75rem;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+}
+
+.login-role-btn {
+  flex: 1;
+  min-width: 170px;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 12px;
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 0.88rem;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.login-role-btn:hover {
+  border-color: #0284c7;
+  background: #f0f9ff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(2, 132, 199, 0.12);
+}
+
+.login-input-group .input-group-text {
+  background-color: #f8fafc;
+  border: 1.5px solid #cbd5e1;
+  border-right: none;
+  border-radius: 12px 0 0 12px;
+  padding: 0 1rem;
+  color: #0284c7;
+  font-size: 1.15rem;
+}
+
+.login-input-group .form-control {
+  border: 1.5px solid #cbd5e1;
+  border-left: none;
+  border-radius: 0 12px 12px 0;
+  padding: 0.75rem 1rem 0.75rem 0.25rem;
+  font-size: 1rem;
+  min-height: 50px;
+  color: #0f172a;
+  background-color: #f8fafc;
+}
+
+.login-input-group .form-control:focus {
+  background-color: #ffffff;
+  box-shadow: none;
+}
+
+.login-input-group:focus-within .input-group-text,
+.login-input-group:focus-within .form-control,
+.login-input-group:focus-within .toggle-password-btn {
+  border-color: #0284c7 !important;
+  background-color: #ffffff;
 }
 
 .hero-stats-box {
@@ -696,10 +799,11 @@ body {
   }
   
   .login-page-wrapper {
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
   
-  .login-hero-col {
-    display: none;
+  .login-hero-col,
+  .login-banner-col {
+    padding: 2rem 1.5rem;
   }
 }

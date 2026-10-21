@@ -157,20 +157,26 @@
         </div>
 
         <!-- PESTAÑAS DE ESTADO (TABS) -->
-        <ul class="nav nav-pills mb-3 gap-2" id="ticketsTab" role="tablist">
+        <ul class="nav nav-pills mb-4 gap-2" id="ticketsTab" role="tablist">
           <li class="nav-item" role="presentation">
-            <button class="nav-link active rounded-pill px-3 py-2 small fw-semibold" id="pendientes-tab" data-bs-toggle="pill" data-bs-target="#pendientes-pane" type="button" role="tab">
-              Pendientes <span class="badge bg-danger ms-1">3</span>
+            <button class="nav-link active rounded-pill px-4 py-2 fw-bold d-flex align-items-center gap-2" id="pendientes-tab" data-bs-toggle="pill" data-bs-target="#pendientes-pane" type="button" role="tab">
+              <i class="bi bi-hourglass-split"></i>
+              <span>Por Atender / Pendientes</span>
+              <span class="badge bg-danger rounded-pill ms-1">0</span>
             </button>
           </li>
           <li class="nav-item" role="presentation">
-            <button class="nav-link rounded-pill px-3 py-2 small fw-semibold" id="completados-tab" data-bs-toggle="pill" data-bs-target="#completados-pane" type="button" role="tab">
-              Pendientes completados <span class="badge bg-secondary ms-1">89</span>
+            <button class="nav-link rounded-pill px-4 py-2 fw-bold d-flex align-items-center gap-2" id="completados-tab" data-bs-toggle="pill" data-bs-target="#completados-pane" type="button" role="tab">
+              <i class="bi bi-check2-circle"></i>
+              <span>Resueltos / Finalizados</span>
+              <span class="badge bg-success rounded-pill ms-1">0</span>
             </button>
           </li>
           <li class="nav-item" role="presentation">
-            <button class="nav-link rounded-pill px-3 py-2 small fw-semibold" id="cancelados-tab" data-bs-toggle="pill" data-bs-target="#cancelados-pane" type="button" role="tab">
-              Pendientes cancelados <span class="badge bg-secondary ms-1">7</span>
+            <button class="nav-link rounded-pill px-4 py-2 fw-bold d-flex align-items-center gap-2" id="cancelados-tab" data-bs-toggle="pill" data-bs-target="#cancelados-pane" type="button" role="tab">
+              <i class="bi bi-x-circle"></i>
+              <span>Cancelados</span>
+              <span class="badge bg-secondary rounded-pill ms-1">0</span>
             </button>
           </li>
         </ul>
@@ -393,35 +399,35 @@
           </div>
 
           <!-- Historial de mensajes y notas (RF09) -->
-          <h6 class="fw-bold mb-3 border-bottom pb-2">Hilo de Comunicación y Notas Técnicas</h6>
-          <div class="p-3 bg-light rounded-3 mb-3" style="max-height: 220px; overflow-y: auto;">
-            <div class="mb-3">
-              <div class="d-flex justify-content-between small text-muted mb-1">
-                <strong>Carlos Mendoza (Usuario)</strong>
-                <span>2026-09-23 09:15</span>
-              </div>
-              <p class="small bg-white p-2 rounded border mb-0">Al ingresar a la opción de Reportes y pulsar exportar, la vista queda en blanco y no genera el archivo.</p>
-            </div>
-            <div class="mb-1">
-              <div class="d-flex justify-content-between small text-muted mb-1">
-                <strong>Franchis Obregón (Técnico de Soporte)</strong>
-                <span>2026-09-23 09:40</span>
-              </div>
-              <p class="small p-2 rounded border mb-0" style="background-color: #eff6ff; border-color: #bfdbfe !important;">Se ha identificado una excepción en la consulta SQL de consolidación. Procedemos con la optimización en el repositorio de datos.</p>
-            </div>
+          <div class="p-3 rounded-3 mb-3 border" style="background:#f8fafc;">
+            <small class="text-secondary fw-bold d-block mb-1">DETALLE ENVIADO POR EL CLIENTE:</small>
+            <div id="modalTicketDescText" class="text-dark">Cargando descripción del ticket...</div>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+            <h6 class="fw-bold mb-0"><i class="bi bi-chat-dots-fill text-primary me-2"></i>Hilo de Mensajes (Cliente ↔ Soporte)</h6>
+            <button type="button" class="btn btn-sm btn-outline-primary rounded-pill" onclick="if(activeTicketModalId) cargarHiloMensajesModal(activeTicketModalId)">
+              <i class="bi bi-arrow-clockwise me-1"></i>Actualizar Chat
+            </button>
+          </div>
+          <div id="adminChatHistoryBox" class="p-3 bg-light rounded-3 mb-3 border" style="max-height: 290px; overflow-y: auto;">
+            <div class="text-center py-3 text-muted small">Selecciona un ticket para ver su conversación.</div>
           </div>
 
           <!-- Formulario de respuesta rápida -->
-          <form onsubmit="event.preventDefault(); showToast('Nota agregada al ticket'); document.getElementById('chatReplyText').value='';">
+          <form onsubmit="event.preventDefault();">
+            <label for="chatReplyText" class="form-label small fw-bold text-secondary mb-1">ESCRIBIR MENSAJE AL CLIENTE:</label>
             <div class="input-group">
-              <input type="text" id="chatReplyText" class="form-control" placeholder="Escribir una actualización o respuesta...">
-              <button class="btn btn-primary" type="submit" style="background-color: var(--primary-color);">Responder</button>
+              <input type="text" id="chatReplyText" class="form-control" placeholder="Escribe aquí tu respuesta o indicación para el cliente..." required>
+              <button class="btn btn-primary fw-bold px-4" type="submit" style="background-color: var(--primary-color);">
+                <i class="bi bi-send-fill me-1"></i>Enviar al Cliente
+              </button>
             </div>
           </form>
         </div>
-        <div class="modal-footer bg-light">
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
-          <button type="button" class="btn btn-success fw-semibold" onclick="showToast('Estado actualizado a RESUELTO'); bootstrap.Modal.getInstance(document.getElementById('detalleTicketModal')).hide();">Marcar como Resuelto</button>
+        <div class="modal-footer bg-light d-flex justify-content-between">
+          <button type="button" class="btn btn-outline-secondary fw-bold" data-bs-dismiss="modal">Cerrar Ventana</button>
+          <button type="button" class="btn btn-success fw-bold px-4"><i class="bi bi-check2-circle me-1"></i>Marcar como Resuelto (Mover a Completados)</button>
         </div>
       </div>
     </div>
@@ -431,27 +437,23 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="js/main.js"></script>
   <script>
-    // Filtro interactivo de búsqueda y prioridad
+    // Filtro interactivo de búsqueda y prioridad (funciona también con tarjetas cargadas dinámicamente de Supabase)
     const searchInput = document.getElementById('searchTicketInput');
     const prioritySelect = document.getElementById('filterPrioritySelect');
-    const ticketCards = document.querySelectorAll('.ticket-card');
 
     function filterTickets() {
-      const term = searchInput.value.toLowerCase();
-      const priority = prioritySelect.value.toLowerCase();
+      const term = (searchInput.value || '').toLowerCase();
+      const priority = (prioritySelect.value || 'todas').toLowerCase();
+      const allCards = document.querySelectorAll('.ticket-card');
 
-      ticketCards.forEach(card => {
+      allCards.forEach(card => {
         const searchData = card.getAttribute('data-search') || '';
         const cardPriority = card.getAttribute('data-priority') || '';
 
         const matchesSearch = searchData.includes(term);
         const matchesPriority = (priority === 'todas') || (cardPriority === priority);
 
-        if (matchesSearch && matchesPriority) {
-          card.style.display = 'block';
-        } else {
-          card.style.display = 'none';
-        }
+        card.style.display = (matchesSearch && matchesPriority) ? 'block' : 'none';
       });
     }
 

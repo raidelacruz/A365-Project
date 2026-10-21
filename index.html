@@ -1,14 +1,24 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="0; url=login.html">
-  <title>IMPULSA A365 - Redireccionando...</title>
-  <script>
-    window.location.href = "login.html";
-  </script>
-</head>
-<body>
-  <p>Redireccionando al sistema <a href="login.html">IMPULSA A365</a>...</p>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0f172a" />
+    <meta name="description" content="Portal de soporte y mesa de ayuda de IMPULSA A365." />
+    <link rel="icon" type="image/jpeg" href="/Imagenes/logo.jpg" />
+    <title>IMPULSA A365 · Mesa de ayuda</title>
+    <script>
+      try {
+        const saved = localStorage.getItem('a365_theme');
+        const theme = saved === 'light' || saved === 'dark' ? saved : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.dataset.bsTheme = theme;
+        document.documentElement.style.colorScheme = theme;
+      } catch { /* React inicializará el tema si el almacenamiento no está disponible. */ }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>
