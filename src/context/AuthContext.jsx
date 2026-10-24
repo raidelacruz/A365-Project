@@ -4,7 +4,8 @@ import { api } from '../services/api.js';
 const AuthContext = createContext(null);
 export const userName = user => [user?.nombres, user?.apellidos].filter(Boolean).join(' ') || user?.correo || 'Usuario';
 export const isManager = user => ['ADMINISTRADOR', 'SUPERVISOR'].includes(user?.rol);
-export const homeFor = user => user?.rol === 'CLIENTE' ? '/mis-solicitudes' : user?.rol === 'EMPLEADO' ? '/atencion' : '/dashboard';
+export const homeFor = user => user?.rol === 'CLIENTE' ? '/mis-solicitudes' : user?.rol === 'EMPLEADO' ? '/atencion' : user?.rol === 'ADMINISTRADOR' ? '/usuarios' : '/dashboard';
+export const roleLabel = role => ({ CLIENTE: 'Cliente', EMPLEADO: 'Agente de soporte', SUPERVISOR: 'Supervisor', ADMINISTRADOR: 'Administrador' }[role] || role);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);

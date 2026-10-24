@@ -32,8 +32,8 @@ export default function App() {
     <Route path="/recuperar-clave" element={<Recover />} />
     <Route element={<Guard><Layout /></Guard>}>
       <Route path="/dashboard" element={<Guard allow={isManager}><Dashboard /></Guard>} />
-      <Route path="/tickets" element={<Guard allow={staff}><Tickets /></Guard>} />
-      <Route path="/atencion" element={<Guard allow={staff}><Tickets attention /></Guard>} />
+      <Route path="/tickets" element={<Guard allow={isManager}><Tickets /></Guard>} />
+      <Route path="/atencion" element={<Guard allow={user => user.rol === 'EMPLEADO'}><Tickets attention /></Guard>} />
       <Route path="/mis-solicitudes" element={<Tickets own />} />
       <Route path="/incidencias" element={<Guard allow={staff}><Incidents /></Guard>} />
       <Route path="/reportes" element={<Guard allow={isManager}><Reports /></Guard>} />

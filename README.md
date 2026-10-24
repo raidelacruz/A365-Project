@@ -44,9 +44,10 @@ El build está en dist/. En producción, configurar el servidor para reenviar /a
 - /: portal público de soporte.
 - /login, /registro, /recuperar-clave: acceso con verificación, alta de cliente y recuperación.
 - /dashboard: resumen para administrador y supervisor.
-- /tickets, /atencion: bandeja de soporte, creación, conversación y estados.
+- /tickets: asignación para supervisor; consulta y auditoría para administrador.
+- /atencion: casos asignados al agente EMPLEADO, atención, notas y resolución.
 - /mis-solicitudes: solicitudes del usuario actual.
-- /incidencias: registro, consulta y revisión por supervisor/administrador.
+- /incidencias: EMPLEADO registra y consulta las propias; SUPERVISOR revisa; ADMINISTRADOR consulta.
 - /usuarios: directorio, alta, edición y activación/desactivación para administrador.
 - /perfil: datos personales.
 - /configuracion: preferencias, contraseña, accesos y correo saliente para administrador.
@@ -64,11 +65,26 @@ La verificación requiere el código enviado por correo y la misma sesión donde
 
 ## Funcionalidades pendientes
 
-Quedan pendientes asignación a técnicos, adjuntos, CSAT, historial completo y notificaciones de tickets. EMPLEADO mantiene la función de atención del sistema previo; separar empleado solicitante y técnico exige ampliar roles.
+Quedan pendientes adjuntos, CSAT, notificaciones de tickets y métricas SLA completas. La asignación a agentes EMPLEADO, las notas internas y el historial de asignaciones/estados ya están implementados.
 
 Los reportes no inventan SLA, satisfacción ni tiempos de resolución. CSV no sustituye el .xlsx requerido; el PDF se obtiene mediante impresión. totalMes de la API cuenta todos los tickets y se presenta como total general.
 
-## Verificación
+## Funciones por rol
+
+| Rol | Inicio y funciones propias |
+|---|---|
+| CLIENTE | Mis solicitudes: crear, conversar y confirmar la solución de sus casos resueltos |
+| EMPLEADO (agente de soporte) | Mis casos asignados: iniciar, responder, registrar notas internas y resolver; registrar sus incidencias |
+| SUPERVISOR | Panel y asignación: elegir agente activo viendo su carga, prioridad y motivo; cancelar/reabrir/cerrar y revisar incidencias |
+| ADMINISTRADOR | Usuarios y roles: altas, edición, activación y configuración; consulta de tickets e historial |
+
+Todos pueden usar Mis solicitudes como solicitantes, separadas de la atención del equipo. El cierre requiere que el ticket esté resuelto. El agente no se asigna casos ni atiende sus propias solicitudes. Los menús y controles siguen los mismos permisos que valida el backend. Los filtros no permiten ampliar el alcance de acceso.
+
+En el detalle, el supervisor tiene Responsable y prioridad; el agente solo ve acciones válidas para el estado actual. Se muestran errores sin perder los formularios y se confirma cada operación completada. La conversación distingue las notas internas. El historial es de consulta para administrador, supervisor y agente asignado.
+
+Publicar primero los cambios del backend y después los del frontend; no se requiere migración SQL. El guion completo para demostrar los cuatro roles está en README.md del backend.
+
+### Verificación de interfaces
 
 Las pruebas usan respuestas simuladas para comprobar navegación por rol, login, errores, conservación de formularios y renderizado de mensajes como texto. No confirman conexión a Supabase ni envío de correo. La validación completa requiere el backend, la base de datos y cuentas configuradas.
 

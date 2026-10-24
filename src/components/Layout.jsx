@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
-import { homeFor, isManager, useAuth, userName } from '../context/AuthContext.jsx';
+import { homeFor, isManager, roleLabel, useAuth, userName } from '../context/AuthContext.jsx';
 import { Brand, Icon, ThemeToggle, ErrorBox } from './UI.jsx';
 
 export default function Layout() {
@@ -14,11 +14,11 @@ export default function Layout() {
   useEffect(() => { document.documentElement.style.setProperty('--font-scale', scale); localStorage.setItem('a365_font_scale', scale); }, [scale]);
   useEffect(() => { const close = event => { if (event.key === 'Escape') { setOpen(false); document.getElementById('menu-toggle')?.focus(); } }; window.addEventListener('keydown', close); return () => window.removeEventListener('keydown', close); }, []);
   const links = user.rol === 'CLIENTE' ? [['/mis-solicitudes', 'ticket-perforated', 'Mis solicitudes']] : [
+    ...(user.rol === 'ADMINISTRADOR' ? [['/usuarios', 'people', 'Usuarios y roles']] : []),
     ...(isManager(user) ? [['/dashboard', 'grid-1x2', 'Panel principal']] : []),
-    [user.rol === 'EMPLEADO' ? '/atencion' : '/tickets', 'ticket-perforated', user.rol === 'EMPLEADO' ? 'Bandeja de atención' : 'Tickets'],
-    ['/mis-solicitudes', 'person-lines-fill', 'Mis solicitudes'], ['/incidencias', 'exclamation-square', 'Incidencias'],
+    [user.rol === 'EMPLEADO' ? '/atencion' : '/tickets', 'ticket-perforated', user.rol === 'EMPLEADO' ? 'Mis casos asignados' : user.rol === 'SUPERVISOR' ? 'Asignación de tickets' : 'Consulta de tickets'],
+    ['/mis-solicitudes', 'person-lines-fill', 'Mis solicitudes'], ['/incidencias', 'exclamation-square', user.rol === 'SUPERVISOR' ? 'Revisión de incidencias' : user.rol === 'EMPLEADO' ? 'Mis incidencias' : 'Consulta de incidencias'],
     ...(isManager(user) ? [['/reportes', 'bar-chart', 'Reportes']] : []),
-    ...(user.rol === 'ADMINISTRADOR' ? [['/usuarios', 'people', 'Usuarios']] : []),
   ];
   const name = userName(user);
   return <div className="app-shell"><a className="skip-link" href="#main-content">Saltar al contenido</a>
@@ -26,7 +26,7 @@ export default function Layout() {
     <aside className={`app-sidebar ${open ? 'is-open' : ''}`} id="app-navigation" aria-label="Navegación principal">
       <Link className="sidebar-brand" to={homeFor(user)}><Brand /></Link>
       <button className="icon-button sidebar-close" aria-label="Cerrar navegación" onClick={() => { setOpen(false); document.getElementById('menu-toggle')?.focus(); }}><Icon name="x-lg" /></button>
-      <div className="sidebar-caption">ESPACIO DE TRABAJO</div>
+      <div className="sidebar-caption">{roleLabel(user.rol)}</div>
       <nav>{links.map(([to, icon, label]) => <NavLink key={to} to={to} className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}><Icon name={icon} /><span>{label}</span></NavLink>)}</nav>
       <div className="sidebar-bottom"><NavLink to="/perfil" className="sidebar-link"><Icon name="person-circle" /> Mi perfil</NavLink><NavLink to="/configuracion" className="sidebar-link"><Icon name="gear" /> Configuración</NavLink><div className="sidebar-footer"><Brand compact /><span>Soporte que conecta.</span></div></div>
     </aside>

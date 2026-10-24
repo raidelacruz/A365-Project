@@ -24,6 +24,64 @@ function mount(path, user) {
   return render(<MemoryRouter initialEntries={[path]}><ThemeProvider><AuthProvider><ToastProvider><App /></ToastProvider></AuthProvider></ThemeProvider></MemoryRouter>);
 }
 
+describe('Funciones por rol', () => {
+  const supervisor = { ...admin, idUsuario: 2, rol: 'SUPERVISOR' };
+  const employee = { ...admin, idUsuario: 3, rol: 'EMPLEADO' };
+  const assigned = { ...ticket, estado: 'ASIGNADO', idUsuarioCreador: 6, idUsuarioAsignado: 3, idEmpleadoAsignado: 7, responsable: 'Agente Uno' };
+  it('el supervisor asigna un agente y prioridad y no recibe acciones de resolución técnica', async () => {
+    const fetch = vi.fn((url, options) => url.endsWith('/agentes') ? respond([{ idEmpleado: 7, idUsuario: 3, nombre: 'Agente Uno', pendientes: 2 }])
+      : url.endsWith('/asignacion') ? respond({ success: true, mensaje: 'Asignación guardada.' }) : url.endsWith('/mensajes') ? respond([]) : respond([assigned]));
+    vi.stubGlobal('fetch', fetch); mount('/tickets', supervisor);
+    expect(await screen.findByRole('heading', { name: 'Asignación de tickets' })).toBeInTheDocument();
+    await userEvent.click(await screen.findByRole('button', { name: /Ver detalle/ }));
+    expect(await screen.findByLabelText('Agente responsable')).toHaveValue('7');
+    expect(screen.queryByRole('button', { name: 'Iniciar atención' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Marcar como resuelto' })).not.toBeInTheDocument();
+    await userEvent.selectOptions(screen.getByLabelText('Prioridad del caso'), 'Baja');
+    await userEvent.type(screen.getByLabelText('Motivo de asignación o cambio'), 'Repartir la carga');
+    await userEvent.click(screen.getByRole('button', { name: 'Guardar asignación' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    const [, options] = fetch.mock.calls.find(([url]) => url.endsWith('/asignacion'));
+    expect(JSON.parse(options.body)).toEqual({ idEmpleado: 7, prioridad: 'Baja', motivo: 'Repartir la carga' });
+  });
+  it('el agente atiende su asignación sin acceso a distribución ni gestión de usuarios', async () => {
+    const fetch = vi.fn(url => url.endsWith('/mensajes') ? respond([]) : respond([assigned]));
+    vi.stubGlobal('fetch', fetch); mount('/atencion', employee);
+    expect(await screen.findByRole('heading', { name: 'Mis casos asignados' })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Usuarios y roles' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Reportes' })).not.toBeInTheDocument();
+    await userEvent.click(await screen.findByRole('button', { name: /Ver detalle/ }));
+    expect(screen.getByRole('button', { name: 'Iniciar atención' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Cerrar ticket' })).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Agente responsable')).not.toBeInTheDocument();
+    expect(screen.getByRole('checkbox', { name: /Nota interna/ })).toBeInTheDocument();
+    expect(fetch.mock.calls.some(([url]) => url.endsWith('/agentes'))).toBe(false);
+  });
+  it('el administrador consulta la auditoría sin sustituir al supervisor ni al agente', async () => {
+    vi.stubGlobal('fetch', vi.fn(url => url.endsWith('/mensajes') ? respond([]) : respond([assigned])));
+    mount('/tickets', admin); await userEvent.click(await screen.findByRole('button', { name: /Ver detalle/ }));
+    expect(screen.queryByRole('button', { name: /Nueva solicitud/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Iniciar atención' })).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Agente responsable')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Tu respuesta')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Ver historial del caso' })).toBeInTheDocument();
+  });
+  it('el cliente confirma la solución sin controles internos ni asignaciones', async () => {
+    const fetch = vi.fn((url, options) => url.endsWith('/estado') ? respond({ success: true }) : url.endsWith('/mensajes') ? respond([]) : respond([{ ...assigned, estado: 'RESUELTO' }]));
+    vi.stubGlobal('fetch', fetch); mount('/mis-solicitudes', client);
+    await userEvent.click(await screen.findByRole('button', { name: /Resueltos/ }));
+    await userEvent.click(await screen.findByRole('button', { name: /Ver detalle/ }));
+    expect(screen.queryByRole('checkbox', { name: /Nota interna/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /historial del caso/ })).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Confirmar solución y cerrar' }));
+    await userEvent.type(screen.getByLabelText('Motivo del cambio'), 'Funciona correctamente');
+    await userEvent.click(screen.getByRole('button', { name: 'Confirmar cambio' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    const [, options] = fetch.mock.calls.find(([url]) => url.endsWith('/estado'));
+    expect(JSON.parse(options.body)).toEqual({ estado: 'CERRADO', motivo: 'Funciona correctamente' });
+  });
+});
+
 describe('Migración React', () => {
   it('cambia el tema en el portal y conserva la preferencia al navegar al login', async () => {
     mount('/');
