@@ -4,15 +4,15 @@ import { api } from '../services/api.js';
 const AuthContext = createContext(null);
 export const userName = user => [user?.nombres, user?.apellidos].filter(Boolean).join(' ') || user?.correo || 'Usuario';
 export const isManager = user => ['ADMINISTRADOR', 'SUPERVISOR'].includes(user?.rol);
-export const homeFor = user => user?.rol === 'CLIENTE' ? '/mis-solicitudes' : user?.rol === 'EMPLEADO' ? '/atencion' : user?.rol === 'ADMINISTRADOR' ? '/usuarios' : '/dashboard';
-export const roleLabel = role => ({ CLIENTE: 'Cliente', EMPLEADO: 'Agente de soporte', SUPERVISOR: 'Supervisor', ADMINISTRADOR: 'Administrador' }[role] || role);
+export const homeFor = user => ['CLIENTE', 'EMPLEADO'].includes(user?.rol) ? '/mis-solicitudes' : user?.rol === 'TECNICO' ? '/atencion' : user?.rol === 'ADMINISTRADOR' ? '/usuarios' : '/dashboard';
+export const roleLabel = role => ({ CLIENTE: 'Cliente externo', EMPLEADO: 'Empleado interno', TECNICO: 'Agente de soporte', SUPERVISOR: 'Supervisor', ADMINISTRADOR: 'Administrador' }[role] || role);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   function login(value) {
-    if (!value?.idUsuario || !['ADMINISTRADOR', 'SUPERVISOR', 'EMPLEADO', 'CLIENTE'].includes(value.rol)) throw new Error('La respuesta no contiene un usuario válido.');
+    if (!value?.idUsuario || !['ADMINISTRADOR', 'SUPERVISOR', 'TECNICO', 'EMPLEADO', 'CLIENTE'].includes(value.rol)) throw new Error('La respuesta no contiene un usuario válido.');
     setUser(value); setError('');
   }
   const refresh = useCallback(async signal => {

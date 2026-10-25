@@ -9,6 +9,7 @@ import Incidents from './pages/Incidents.jsx';
 import Users from './pages/Users.jsx';
 import { Profile, Settings } from './pages/Account.jsx';
 import Reports from './pages/Reports.jsx';
+import Clients from './pages/Clients.jsx';
 import { Empty, Loading, ErrorBox } from './components/UI.jsx';
 
 function Guard({ children, allow }) {
@@ -24,7 +25,7 @@ function OldHome() { const { user } = useAuth(); return <Navigate to={user ? hom
 export default function App() {
   const location = useLocation();
   useEffect(() => { document.title = 'IMPULSA A365 · Mesa de ayuda'; window.scrollTo?.(0, 0); }, [location.pathname]);
-  const staff = user => user.rol !== 'CLIENTE';
+  const staff = user => ['ADMINISTRADOR', 'SUPERVISOR', 'TECNICO'].includes(user.rol);
   return <Routes>
     <Route path="/" element={<Portal />} />
     <Route path="/login" element={<Login />} />
@@ -33,10 +34,11 @@ export default function App() {
     <Route element={<Guard><Layout /></Guard>}>
       <Route path="/dashboard" element={<Guard allow={isManager}><Dashboard /></Guard>} />
       <Route path="/tickets" element={<Guard allow={isManager}><Tickets /></Guard>} />
-      <Route path="/atencion" element={<Guard allow={user => user.rol === 'EMPLEADO'}><Tickets attention /></Guard>} />
+      <Route path="/atencion" element={<Guard allow={user => user.rol === 'TECNICO'}><Tickets attention /></Guard>} />
       <Route path="/mis-solicitudes" element={<Tickets own />} />
       <Route path="/incidencias" element={<Guard allow={staff}><Incidents /></Guard>} />
       <Route path="/reportes" element={<Guard allow={isManager}><Reports /></Guard>} />
+      <Route path="/clientes" element={<Guard allow={isManager}><Clients /></Guard>} />
       <Route path="/usuarios" element={<Guard allow={user => user.rol === 'ADMINISTRADOR'}><Users /></Guard>} />
       <Route path="/perfil" element={<Profile />} />
       <Route path="/configuracion" element={<Settings />} />

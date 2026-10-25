@@ -13,12 +13,12 @@ export default function Layout() {
   useEffect(() => { setOpen(false); document.getElementById('main-content')?.focus(); }, [location.pathname]);
   useEffect(() => { document.documentElement.style.setProperty('--font-scale', scale); localStorage.setItem('a365_font_scale', scale); }, [scale]);
   useEffect(() => { const close = event => { if (event.key === 'Escape') { setOpen(false); document.getElementById('menu-toggle')?.focus(); } }; window.addEventListener('keydown', close); return () => window.removeEventListener('keydown', close); }, []);
-  const links = user.rol === 'CLIENTE' ? [['/mis-solicitudes', 'ticket-perforated', 'Mis solicitudes']] : [
+  const links = ['CLIENTE', 'EMPLEADO'].includes(user.rol) ? [['/mis-solicitudes', 'ticket-perforated', 'Mis solicitudes']] : [
     ...(user.rol === 'ADMINISTRADOR' ? [['/usuarios', 'people', 'Usuarios y roles']] : []),
     ...(isManager(user) ? [['/dashboard', 'grid-1x2', 'Panel principal']] : []),
-    [user.rol === 'EMPLEADO' ? '/atencion' : '/tickets', 'ticket-perforated', user.rol === 'EMPLEADO' ? 'Mis casos asignados' : user.rol === 'SUPERVISOR' ? 'Asignación de tickets' : 'Consulta de tickets'],
-    ['/mis-solicitudes', 'person-lines-fill', 'Mis solicitudes'], ['/incidencias', 'exclamation-square', user.rol === 'SUPERVISOR' ? 'Revisión de incidencias' : user.rol === 'EMPLEADO' ? 'Mis incidencias' : 'Consulta de incidencias'],
-    ...(isManager(user) ? [['/reportes', 'bar-chart', 'Reportes']] : []),
+    [user.rol === 'TECNICO' ? '/atencion' : '/tickets', 'ticket-perforated', user.rol === 'TECNICO' ? 'Mis casos asignados' : user.rol === 'SUPERVISOR' ? 'Asignación de tickets' : 'Consulta de tickets'],
+    ['/mis-solicitudes', 'person-lines-fill', 'Mis solicitudes'], ['/incidencias', 'exclamation-square', user.rol === 'SUPERVISOR' ? 'Revisión de incidencias' : user.rol === 'TECNICO' ? 'Mis incidencias' : 'Consulta de incidencias'],
+    ...(isManager(user) ? [['/clientes', 'buildings', 'Directorio de clientes'], ['/reportes', 'bar-chart', 'Reportes']] : []),
   ];
   const name = userName(user);
   return <div className="app-shell"><a className="skip-link" href="#main-content">Saltar al contenido</a>

@@ -15,14 +15,15 @@ async function csrfToken() {
 export async function request(path, { method = 'GET', body, signal } = {}) {
   let response;
   const headers = { Accept: 'application/json' };
-  if (body !== undefined) headers['Content-Type'] = 'application/json';
+  const multipart = body instanceof FormData;
+  if (body !== undefined && !multipart) headers['Content-Type'] = 'application/json';
   try {
     if (!['GET', 'HEAD', 'OPTIONS'].includes(method)) {
       const csrf = await csrfToken(); headers[csrf.headerName] = csrf.token;
     }
     response = await fetch(`${BASE}${path}`, {
       method, signal, credentials: 'include', headers,
-      ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+      ...(body === undefined ? {} : { body: multipart ? body : JSON.stringify(body) }),
     });
   } catch (error) {
     if (error.name === 'AbortError') throw error;
@@ -48,6 +49,26 @@ export function asList(value) {
   return value;
 }
 
+function query(values) {
+  const params = new URLSearchParams();
+  for (const [key,value] of Object.entries(values || {})) if (value !== '' && value !== undefined && value !== null) params.set(key,value);
+  return params.size ? `?${params}` : '';
+}
+
+export async function download(path, filename) {
+  let response;
+  try { response = await fetch(`${BASE}${path}`, { credentials: 'include' }); }
+  catch { throw new Error('No pudimos descargar el archivo. Revisa tu conexión.'); }
+  if (!response.ok) {
+    if (response.status === 401) window.dispatchEvent(new Event('a365:session-expired'));
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.error || 'No se pudo descargar el archivo.');
+  }
+  const url = URL.createObjectURL(await response.blob());
+  const link = document.createElement('a'); link.href = url; link.download = filename;
+  document.body.appendChild(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 export const api = {
   me: signal => request('/auth/me', { signal }),
   logout: () => request('/auth/logout', { method: 'POST' }),
@@ -62,6 +83,13 @@ export const api = {
   agents: signal => request('/tickets/agentes', { signal }).then(asList),
   assignTicket: (id, body) => request(`/tickets/${id}/asignacion`, { method: 'PATCH', body }),
   ticketHistory: (id, signal) => request(`/tickets/${id}/historial`, { signal }).then(asList),
+  attachments: (id, signal) => request(`/tickets/${id}/adjuntos`, { signal }).then(asList),
+  uploadAttachment: (id, file) => { const body = new FormData(); body.append('archivo',file); return request(`/tickets/${id}/adjuntos`, { method: 'POST', body }); },
+  downloadAttachment: (id, item) => download(`/tickets/${id}/adjuntos/${item.idAdjunto}`, item.nombre),
+  exportReport: (format, from, to) => download(`/reportes/exportar${query({ formato: format, desde: from, hasta: to })}`, `tickets-a365.${format}`),
+  clients: (filters, signal) => request(`/clientes${query(filters)}`, { signal }).then(asList),
+  createClient: body => request('/clientes', { method: 'POST', body }),
+  updateClient: (id, body) => request(`/clientes/${id}`, { method: 'PUT', body }),
   messages: (id, signal) => request(`/tickets/${id}/mensajes`, { signal }).then(asList),
   sendMessage: (id, body) => request(`/tickets/${id}/mensajes`, { method: 'POST', body }),
   summary: signal => request('/dashboard/resumen', { signal }),

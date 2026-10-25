@@ -12,21 +12,90 @@ const admin = { idUsuario: 1, nombres: 'Grace', apellidos: 'Galán', rol: 'ADMIN
 const client = { idUsuario: 6, nombres: 'Cliente', apellidos: 'Prueba', rol: 'CLIENTE', correo: 'cliente@example.test' };
 const ticket = { idTicket: 10, codigo: 'TK-2026-010', asunto: 'No puedo acceder', descripcion: 'Error de acceso', categoria: 'Software', estado: 'ABIERTO', prioridad: 'Alta', solicitante: 'Cliente Prueba', fecha: '2026-10-20 10:00' };
 const respond = (data, status = 200) => Promise.resolve(new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json' } }));
-function mount(path, user) {
+function mount(path, user, { attachments = [] } = {}) {
   clearCsrf();
   const original = globalThis.fetch;
   vi.stubGlobal('fetch', (url, options) => {
     if (url.endsWith('/auth/csrf')) return respond({ token: 'test-csrf-token', headerName: 'X-CSRF-TOKEN' });
     if (url.endsWith('/auth/me')) return user ? respond({ usuario: user }) : respond({ error: 'Sin sesión' }, 401);
     if (url.endsWith('/auth/logout')) return respond({ success: true });
+    if (url.endsWith('/adjuntos') && !options?.method?.match(/POST|PUT/)) return respond(attachments);
     return original(url, options);
   });
   return render(<MemoryRouter initialEntries={[path]}><ThemeProvider><AuthProvider><ToastProvider><App /></ToastProvider></AuthProvider></ThemeProvider></MemoryRouter>);
 }
 
+describe('RF del AVPF2', () => {
+  it('el empleado interno accede solo como solicitante y no entra a soporte', async () => {
+    vi.stubGlobal('fetch',vi.fn(()=>respond([])));
+    mount('/atencion',{...client,idUsuario:4,rol:'EMPLEADO'});
+    expect(await screen.findByRole('heading',{name:'Mis solicitudes'})).toBeInTheDocument();
+    expect(screen.queryByRole('link',{name:'Mis casos asignados'})).not.toBeInTheDocument();
+    expect(screen.queryByRole('link',{name:'Directorio de clientes'})).not.toBeInTheDocument();
+    expect(screen.queryByRole('link',{name:'Mis incidencias'})).not.toBeInTheDocument();
+  });
+  it('edita los datos corporativos del cliente en su módulo propio', async () => {
+    const item={idCliente:12,codigo:'CLI-12',razonSocial:'Empresa SAC',tipoDocumento:'RUC',documento:'20123456789',contactoNombre:'Ana',correo:'ana@example.test',activo:true};
+    const fetch=vi.fn((_url,options)=>options?.method==='PUT'?respond({success:true}):respond([item]));
+    vi.stubGlobal('fetch',fetch);mount('/clientes',admin);
+    await userEvent.click(await screen.findByRole('button',{name:'Editar ficha'}));
+    await userEvent.clear(screen.getByLabelText('Razón social'));await userEvent.type(screen.getByLabelText('Razón social'),'Empresa Actualizada SAC');
+    await userEvent.click(screen.getByRole('button',{name:'Guardar ficha'}));
+    await waitFor(()=>expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    const [url,options]=fetch.mock.calls.find(([,options])=>options?.method==='PUT');
+    expect(url).toBe('/api/clientes/12');expect(JSON.parse(options.body).razonSocial).toBe('Empresa Actualizada SAC');
+  });
+  it('el supervisor filtra clientes sin recibir controles de edición', async () => {
+    const fetch=vi.fn(()=>respond([]));vi.stubGlobal('fetch',fetch);mount('/clientes',{...admin,idUsuario:2,rol:'SUPERVISOR'});
+    await screen.findByRole('heading',{name:'Directorio de clientes'});
+    expect(screen.queryByRole('button',{name:'Registrar cliente'})).not.toBeInTheDocument();
+    await userEvent.type(screen.getByLabelText('Buscar clientes'),'20123456789');
+    await userEvent.selectOptions(screen.getByLabelText('Estado de la cuenta'),'true');
+    await userEvent.click(screen.getByRole('button',{name:'Buscar',exact:true}));
+    await waitFor(()=>expect(fetch.mock.calls.some(([url])=>url.includes('/clientes?q=20123456789&activo=true'))).toBe(true));
+  });
+  it('filtra tickets por fecha y responsable y muestra el estado pendiente del cliente', async () => {
+    const rows=[{...ticket,idTicket:1,asunto:'Caso Ana',responsable:'Ana',fecha:'2026-10-24 10:00',estado:'PENDIENTE_CLIENTE'}, {...ticket,idTicket:2,asunto:'Caso Luis',responsable:'Luis',fecha:'2026-09-01 10:00'}];
+    vi.stubGlobal('fetch',vi.fn(()=>respond(rows)));mount('/tickets',admin);await screen.findByText('Caso Ana');
+    await userEvent.type(screen.getByLabelText('Filtrar por responsable'),'Ana');
+    await userEvent.type(screen.getByLabelText('Tickets desde'),'2026-10-01');
+    expect(screen.queryByText('Caso Luis')).not.toBeInTheDocument();expect(screen.getByText('Pendiente del cliente')).toBeInTheDocument();
+  });
+  it('reintenta adjuntos sin crear el ticket otra vez y mantiene CSRF en multipart', async () => {
+    let uploads=0;const fetch=vi.fn((url,options)=>url.endsWith('/adjuntos') && options?.method==='POST' ? ++uploads===1?respond({error:'Intenta otra vez'},500):respond({success:true},201)
+      : options?.method==='POST'?respond({success:true,idTicket:90,codigoTicket:'TK-90'},201):respond([]));
+    vi.stubGlobal('fetch',fetch);mount('/mis-solicitudes',client);
+    await userEvent.click(await screen.findByRole('button',{name:/Nueva solicitud/}));
+    await userEvent.type(screen.getByLabelText('Asunto'),'Error de acceso');await userEvent.type(screen.getByLabelText('Descripción'),'Adjunto evidencia');
+    await userEvent.upload(screen.getByLabelText('Archivos adjuntos (opcional)'),new File(['%PDF-1.7'],'evidencia.pdf',{type:'application/pdf'}));
+    await userEvent.click(screen.getByRole('button',{name:'Registrar solicitud'}));
+    expect(await screen.findByRole('alert')).toHaveTextContent('ya está creada');
+    await userEvent.click(screen.getByRole('button',{name:'Reintentar adjuntos'}));
+    await waitFor(()=>expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(fetch.mock.calls.filter(([url,options])=>url==='/api/tickets' && options?.method==='POST')).toHaveLength(1);
+    const [,options]=fetch.mock.calls.find(([url,options])=>url.endsWith('/adjuntos') && options?.method==='POST');
+    expect(options.body).toBeInstanceOf(FormData);expect(options.headers).not.toHaveProperty('Content-Type');expect(options.headers['X-CSRF-TOKEN']).toBe('test-csrf-token');
+    expect(uploads).toBe(2);
+  });
+  it('los reportes descargan Excel y PDF desde la API con el período seleccionado', async () => {
+    const originalUrl=URL;vi.stubGlobal('URL',class extends originalUrl {static createObjectURL(){return 'blob:test';} static revokeObjectURL=vi.fn();});
+    vi.spyOn(HTMLAnchorElement.prototype,'click').mockImplementation(()=>{});
+    const fetch=vi.fn(url=>url.includes('/reportes/exportar')?Promise.resolve(new Response(new Uint8Array([80,75]),{status:200})):respond([ticket]));
+    vi.stubGlobal('fetch',fetch);mount('/reportes',admin);await screen.findByText('No puedo acceder');
+    await userEvent.type(screen.getByLabelText('Desde'),'2026-10-01');
+    await userEvent.click(screen.getByRole('button',{name:'Descargar Excel'}));
+    await waitFor(()=>expect(fetch.mock.calls.some(([url])=>url.includes('formato=xlsx&desde=2026-10-01'))).toBe(true));
+    await waitFor(()=>expect(screen.getByRole('button',{name:'Descargar PDF'})).toBeEnabled());
+    await userEvent.click(screen.getByRole('button',{name:'Descargar PDF'}));
+    await waitFor(()=>expect(fetch.mock.calls.some(([url])=>url.includes('formato=pdf&desde=2026-10-01'))).toBe(true));
+    await waitFor(()=>expect(URL.revokeObjectURL).toHaveBeenCalledTimes(2),{timeout:2500});
+    vi.restoreAllMocks();
+  });
+});
+
 describe('Funciones por rol', () => {
   const supervisor = { ...admin, idUsuario: 2, rol: 'SUPERVISOR' };
-  const employee = { ...admin, idUsuario: 3, rol: 'EMPLEADO' };
+  const employee = { ...admin, idUsuario: 3, rol: 'TECNICO' };
   const assigned = { ...ticket, estado: 'ASIGNADO', idUsuarioCreador: 6, idUsuarioAsignado: 3, idEmpleadoAsignado: 7, responsable: 'Agente Uno' };
   it('el supervisor asigna un agente y prioridad y no recibe acciones de resolución técnica', async () => {
     const fetch = vi.fn((url, options) => url.endsWith('/agentes') ? respond([{ idEmpleado: 7, idUsuario: 3, nombre: 'Agente Uno', pendientes: 2 }])

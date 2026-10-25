@@ -28,7 +28,7 @@ export function Submit({ busy, children = 'Guardar cambios', ...props }) { retur
 export function ErrorBox({ message, retry }) { return message ? <div className="alert alert-danger" role="alert"><Icon name="exclamation-circle" /> <span>{message}</span>{retry && <button className="btn btn-sm btn-outline-danger ms-auto" onClick={retry}>Reintentar</button>}</div> : null; }
 export function Loading() { return <div className="loading-state" role="status"><span className="spinner-border spinner-border-sm" /> Cargando información…</div>; }
 export function Empty({ title = 'Sin resultados', description = 'Prueba con otros filtros o registra el primer elemento.', icon = 'inbox' }) { return <div className="empty-state"><Icon name={icon} /><h3>{title}</h3><p>{description}</p></div>; }
-const labels = { ABIERTO: 'Abierto', ASIGNADO: 'Asignado', EN_PROCESO: 'En proceso', RESUELTO: 'Resuelto', CERRADO: 'Cerrado', CANCELADO: 'Cancelado' };
+const labels = { ABIERTO: 'Abierto', ASIGNADO: 'Asignado', EN_PROCESO: 'En proceso', PENDIENTE_CLIENTE: 'Pendiente del cliente', TECNICO: 'Técnico de soporte', EMPLEADO: 'Empleado interno', RESUELTO: 'Resuelto', CERRADO: 'Cerrado', CANCELADO: 'Cancelado' };
 export function Badge({ value }) { const key = String(value || '').toUpperCase().replaceAll(' ', '_'); return <span className={`status-badge status-${key.toLowerCase()}`}>{labels[key] || value || 'Sin estado'}</span>; }
 export function Resource({ resource, children }) { if (resource.loading && !resource.data) return <Loading />; if (resource.error) return <ErrorBox message={resource.error} retry={resource.reload} />; return children(resource.data); }
 export function Modal({ title, children, onClose, wide = false }) {

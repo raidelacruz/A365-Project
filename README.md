@@ -45,13 +45,14 @@ El build está en dist/. En producción, configurar el servidor para reenviar /a
 - /login, /registro, /recuperar-clave: acceso con verificación, alta de cliente y recuperación.
 - /dashboard: resumen para administrador y supervisor.
 - /tickets: asignación para supervisor; consulta y auditoría para administrador.
-- /atencion: casos asignados al agente EMPLEADO, atención, notas y resolución.
+- /atencion: casos asignados al agente TECNICO, atención, notas y resolución.
 - /mis-solicitudes: solicitudes del usuario actual.
-- /incidencias: EMPLEADO registra y consulta las propias; SUPERVISOR revisa; ADMINISTRADOR consulta.
+- /incidencias: TECNICO registra y consulta las propias; SUPERVISOR revisa; ADMINISTRADOR consulta.
 - /usuarios: directorio, alta, edición y activación/desactivación para administrador.
 - /perfil: datos personales.
 - /configuracion: preferencias, contraseña, accesos y correo saliente para administrador.
-- /reportes: filtros de fechas, indicadores de tickets reales, descarga CSV e impresión para guardar como PDF desde el navegador.
+- /reportes: filtros de fechas, indicadores de tickets reales y descarga PDF/Excel generada por el backend.
+- /clientes: directorio corporativo; administrador crea y edita, supervisor consulta.
 
 Los enlaces antiguos como tickets.html redirigen a su ruta React equivalente. En producción necesitan el mismo fallback a index.html.
 
@@ -65,16 +66,17 @@ La verificación requiere el código enviado por correo y la misma sesión donde
 
 ## Funcionalidades pendientes
 
-Quedan pendientes adjuntos, CSAT, notificaciones de tickets y métricas SLA completas. La asignación a agentes EMPLEADO, las notas internas y el historial de asignaciones/estados ya están implementados.
+Quedan pendientes CSAT, notificaciones de tickets, asignación automática y métricas SLA completas. La asignación a agentes TECNICO, las notas internas y el historial de asignaciones/estados ya están implementados.
 
-Los reportes no inventan SLA, satisfacción ni tiempos de resolución. CSV no sustituye el .xlsx requerido; el PDF se obtiene mediante impresión. totalMes de la API cuenta todos los tickets y se presenta como total general.
+Los reportes no inventan SLA, satisfacción ni tiempos de resolución. El backend genera archivos PDF y XLSX reales con el período seleccionado. totalMes de la API cuenta todos los tickets y se presenta como total general.
 
 ## Funciones por rol
 
 | Rol | Inicio y funciones propias |
 |---|---|
 | CLIENTE | Mis solicitudes: crear, conversar y confirmar la solución de sus casos resueltos |
-| EMPLEADO (agente de soporte) | Mis casos asignados: iniciar, responder, registrar notas internas y resolver; registrar sus incidencias |
+| EMPLEADO (solicitante interno) | Mis solicitudes: registra, conversa y confirma la solución de sus propios casos |
+| TECNICO (agente de soporte) | Mis casos asignados: iniciar, responder, registrar notas internas y resolver; registrar sus incidencias |
 | SUPERVISOR | Panel y asignación: elegir agente activo viendo su carga, prioridad y motivo; cancelar/reabrir/cerrar y revisar incidencias |
 | ADMINISTRADOR | Usuarios y roles: altas, edición, activación y configuración; consulta de tickets e historial |
 
@@ -82,7 +84,7 @@ Todos pueden usar Mis solicitudes como solicitantes, separadas de la atención d
 
 En el detalle, el supervisor tiene Responsable y prioridad; el agente solo ve acciones válidas para el estado actual. Se muestran errores sin perder los formularios y se confirma cada operación completada. La conversación distingue las notas internas. El historial es de consulta para administrador, supervisor y agente asignado.
 
-Publicar primero los cambios del backend y después los del frontend; no se requiere migración SQL. El guion completo para demostrar los cuatro roles está en README.md del backend.
+Publicar primero los cambios del backend y después los del frontend; el backend aplica automáticamente la migración incremental V2 de roles y adjuntos al arrancar. El guion completo para demostrar los cinco roles está en README.md del backend.
 
 ### Verificación de interfaces
 
@@ -110,3 +112,12 @@ El sitio público es https://a365-project.vercel.app y el backend https://backen
 ### Desarrollo local
 
 Vite usa el puerto fijo 5173 (strictPort). Si ya está ocupado, detén la instancia anterior con Ctrl+C antes de iniciar otra. Abre http://127.0.0.1:5173 o http://localhost:5173; no reutilices una pestaña antigua en 5174. El backend admite esos orígenes concretos y conserva la protección CSRF. Después de reiniciar Vite, recarga la pestaña para renovar la conexión de desarrollo.
+
+
+## Alcance del 71,4 % funcional
+
+Ver `backend-a365/docs/AVANCE-RF.md`: 10 RF completos de 14, sin sumar parciales. Cinco perfiles: ADMINISTRADOR, SUPERVISOR, TECNICO, EMPLEADO interno y CLIENTE externo. El servidor es la autoridad de permisos; React no convierte un empleado en técnico. Las cuentas antiguas de soporte EMPLEADO pasan a TECNICO para conservar asignaciones.
+
+Los tickets permiten filtrar por código/texto, estado, prioridad, fechas y responsable. Los adjuntos se pueden añadir en la creación o en el detalle y descargar con sesión. Si falla un adjunto después de crear el ticket, se reintentan solo los pendientes; no se duplica la solicitud. Formatos PDF/PNG/JPEG, cinco por caso, 2 MB cada uno. El estado Pendiente del cliente permite pedir información antes de retomar la atención.
+
+Publicar los cambios de ambos repositorios; primero el backend, luego el frontend. Confirmar en Render que la actualización V2 arrancó y volver a iniciar sesión. Las pruebas usan servicios simulados y no acreditan todavía una validación del despliegue nuevo contra Supabase.

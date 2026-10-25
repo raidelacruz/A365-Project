@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Attachments from './TicketAttachments.jsx';
 import { useSearchParams } from 'react-router-dom';
 import { api } from '../services/api.js';
 import { useResource } from '../hooks/useResource.js';
@@ -14,12 +15,17 @@ export default function Tickets({ own = false, attention = false }) {
   const [selected, setSelected] = useState(null);
   const [query, setQuery] = useState(''); const [priority, setPriority] = useState('');
   const [tab, setTab] = useState('activos'); const [unassigned, setUnassigned] = useState(false);
+  const [exactState,setExactState] = useState(''); const [from,setFrom] = useState(''); const [to,setTo] = useState('');
+  const [responsible,setResponsible] = useState(''); const invalidRange = from && to && from > to;
   const resource = useResource(signal => api.tickets(own ? user.idUsuario : null, signal), [own, user.idUsuario]);
   const tickets = resource.data || [];
   const supervisor = user.rol === 'SUPERVISOR';
   const filtered = tickets.filter(ticket => {
     const group = ticket.estado === 'CANCELADO' ? 'cancelados' : terminal(ticket.estado) ? 'resueltos' : 'activos';
-    return group === tab && (!unassigned || !ticket.responsable) && (!priority || ticket.prioridad?.toLowerCase() === priority.toLowerCase())
+    return !invalidRange && group === tab && (!exactState || ticket.estado === exactState)
+      && (!from || ticket.fecha?.slice(0,10) >= from) && (!to || ticket.fecha?.slice(0,10) <= to)
+      && (!responsible || (ticket.responsable || '').toLowerCase().includes(responsible.toLowerCase()))
+      && (!unassigned || !ticket.responsable) && (!priority || ticket.prioridad?.toLowerCase() === priority.toLowerCase())
       && [ticket.codigo, ticket.asunto, ticket.solicitante, ticket.categoria, ticket.responsable].join(' ').toLowerCase().includes(query.toLowerCase());
   });
   function closeCreation() {
@@ -38,12 +44,19 @@ export default function Tickets({ own = false, attention = false }) {
         ['activos', 'Activos', tickets.filter(ticket => !terminal(ticket.estado)).length],
         ['resueltos', 'Resueltos', tickets.filter(ticket => ['RESUELTO', 'CERRADO'].includes(ticket.estado)).length],
         ['cancelados', 'Cancelados', tickets.filter(ticket => ticket.estado === 'CANCELADO').length],
-      ].map(([value, label, count]) => <button key={value} aria-pressed={tab === value} className={`filter-tab ${tab === value ? 'selected' : ''}`} onClick={() => setTab(value)}>{label}<span>{count}</span></button>)}</div>
+      ].map(([value, label, count]) => <button key={value} aria-pressed={tab === value} className={`filter-tab ${tab === value ? 'selected' : ''}`} onClick={() => {setTab(value);setExactState('');}}>{label}<span>{count}</span></button>)}</div>
       <div className="filter-row">
         <div className="search-field"><Icon name="search" /><input aria-label="Buscar tickets" className="form-control" placeholder="Busca por código, asunto o responsable…" value={query} onChange={event => setQuery(event.target.value)} /></div>
         <select className="form-select priority-filter" aria-label="Filtrar por prioridad" value={priority} onChange={event => setPriority(event.target.value)}><option value="">Todas las prioridades</option>{['Alta', 'Media', 'Baja'].map(value => <option key={value}>{value}</option>)}</select>
         <button className="btn btn-outline-secondary" onClick={resource.reload} disabled={resource.loading}><Icon name="arrow-clockwise" /><span className="visually-hidden">Actualizar tickets</span></button>
       </div>
+      <div className="row">
+        <div className="col-md-3"><Select label="Estado exacto" value={exactState} onChange={event=>{const value=event.target.value;setExactState(value);if(value)setTab(value==='CANCELADO'?'cancelados':terminal(value)?'resueltos':'activos');}}><option value="">Todos en esta pestaña</option>{['ABIERTO','ASIGNADO','EN_PROCESO','PENDIENTE_CLIENTE','RESUELTO','CERRADO','CANCELADO'].map(value=><option key={value} value={value}>{value.replaceAll('_',' ')}</option>)}</Select></div>
+        <div className="col-md-3"><Input label="Filtrar por responsable" value={responsible} onChange={event=>setResponsible(event.target.value)} /></div>
+        <div className="col-md-3"><Input label="Tickets desde" type="date" value={from} onChange={event=>setFrom(event.target.value)} /></div>
+        <div className="col-md-3"><Input label="Tickets hasta" type="date" min={from} value={to} onChange={event=>setTo(event.target.value)} /></div>
+      </div>
+      <ErrorBox message={invalidRange ? 'La fecha final debe ser igual o posterior a la inicial.' : ''} />
       {supervisor && !own && <label className="d-flex align-items-center gap-2 mb-3"><input type="checkbox" className="form-check-input mt-0" checked={unassigned} onChange={event => setUnassigned(event.target.checked)} /> Solo casos sin responsable disponible</label>}
       <Resource resource={resource}>{() => filtered.length ? <div className="table-responsive"><table className="table align-middle ticket-table">
         <thead><tr><th>Solicitud</th>{!own && <th>Solicitante</th>}<th>Responsable</th><th>Prioridad</th><th>Estado</th><th>Registrado</th><th>Acciones</th></tr></thead>
@@ -61,18 +74,29 @@ export default function Tickets({ own = false, attention = false }) {
 export function NewTicket({ onClose, onCreated }) {
   const toast = useToast(); const [form, setForm] = useState(initialTicket);
   const [busy, setBusy] = useState(false); const [error, setError] = useState('');
+  const [files,setFiles] = useState([]); const [created,setCreated] = useState(null);
   const bind = key => ({ value: form[key], onChange: event => setForm(previous => ({ ...previous, [key]: event.target.value })) });
   async function submit(event) {
     event.preventDefault(); setBusy(true); setError('');
-    try { const result = await api.createTicket(form); toast(result.mensaje || `Solicitud ${result.codigoTicket} registrada.`); onCreated(); }
-    catch (err) { setError(err.message); } finally { setBusy(false); }
+    let result=created; let index=0;
+    try {
+      if(!result) { result=await api.createTicket(form);setCreated(result); }
+      for(;index<files.length;index++) await api.uploadAttachment(result.idTicket,files[index]);
+      setFiles([]);toast(result.mensaje || 'Solicitud y adjuntos registrados.');onCreated();
+    }
+    catch (err) { if(result) {setFiles(files.slice(index));setError(`La solicitud ${result.codigoTicket || ''} ya está creada. ${err.message} Reintenta solo los adjuntos o consulta Mis solicitudes.`);} else setError(err.message); }
+    finally { setBusy(false); }
   }
   return <Modal title="Nueva solicitud de soporte" onClose={() => { if (!busy) onClose(); }}>
     <p className="text-secondary">Cuéntanos qué ocurre para que el equipo pueda ayudarte.</p><ErrorBox message={error} /><form onSubmit={submit}>
+      <fieldset disabled={!!created || busy}>
       <Input label="Asunto" placeholder="Describe brevemente qué necesitas" {...bind('asunto')} required maxLength={150} />
       <div className="row"><div className="col-sm-6"><Select label="Categoría" {...bind('categoria')}>{['Software', 'Hardware', 'Redes', 'Accesos', 'Otros'].map(value => <option key={value}>{value}</option>)}</Select></div><div className="col-sm-6"><Select label="Prioridad" {...bind('prioridad')}>{['Baja', 'Media', 'Alta'].map(value => <option key={value}>{value}</option>)}</Select></div></div>
       <Textarea label="Descripción" placeholder="Explica lo que intentabas hacer y qué sucedió." {...bind('descripcion')} required maxLength={10000} />
-      <div className="dialog-actions"><button type="button" className="btn btn-outline-secondary" onClick={onClose} disabled={busy}>Cancelar</button><Submit busy={busy}>Registrar solicitud</Submit></div>
+      </fieldset>
+      <Input label="Archivos adjuntos (opcional)" type="file" accept=".pdf,.png,.jpg,.jpeg" multiple disabled={busy} onChange={event=>{const next=Array.from(event.target.files || []);if(next.length>5 || next.some(file=>file.size>2*1024*1024)){setError('Adjunta como máximo cinco archivos PDF, PNG o JPEG de hasta 2 MB cada uno.');event.target.value='';setFiles([]);return;}setError('');setFiles(next);}} hint="Hasta cinco archivos PDF, PNG o JPEG de 2 MB cada uno." />
+      {!!files.length && <p>{files.map(file=>file.name).join(', ')}</p>}
+      <div className="dialog-actions"><button type="button" className="btn btn-outline-secondary" onClick={onClose} disabled={busy}>{created?'Cerrar':'Cancelar'}</button><Submit busy={busy}>{created?'Reintentar adjuntos':'Registrar solicitud'}</Submit></div>
     </form>
   </Modal>;
 }
@@ -97,6 +121,7 @@ export function TicketDetail({ ticket, onClose, onChanged }) {
     <div className="ticket-detail-heading"><h3>{ticket.asunto}</h3><div className="d-flex flex-wrap gap-2"><Badge value={ticket.prioridad} /><Badge value={ticket.estado} /></div>
       <p className="text-secondary mt-2">{ticket.solicitante} · {ticket.fecha} · {ticket.categoria}</p><p><strong>Responsable:</strong> {ticket.responsable || 'Pendiente de asignación'}</p></div>
     <p className="ticket-description">{ticket.descripcion}</p><ErrorBox message={error} />
+    <Attachments ticket={ticket} canUpload={permission.reply} />
     {permission.assign && <Assignment ticket={ticket} onChanged={onChanged} />}
     {permission.actions.length > 0 && <div className="ticket-state-actions mb-4"><h3>{permission.owner ? 'Confirmación de la solución' : 'Acciones de tu rol'}</h3>
       {action ? <form onSubmit={changeState}><p>Vas a cambiar el estado a <Badge value={action} />.</p><Textarea label="Motivo del cambio" value={reason} onChange={event => setReason(event.target.value)} required maxLength={180} />
