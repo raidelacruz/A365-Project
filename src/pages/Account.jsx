@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { api } from '../services/api.js';
 import { useResource } from '../hooks/useResource.js';
 import { useAuth, userName } from '../context/AuthContext.jsx';
-import { Badge, ErrorBox, Input, Modal, PageHeading, Panel, Password, Resource, Submit, useToast } from '../components/UI.jsx';
+import { Badge, ErrorBox, Input, Modal, PageHeading, Panel, Password, Resource, STRONG_PASSWORD_HINT, STRONG_PASSWORD_PATTERN, Submit, useToast } from '../components/UI.jsx';
 
 export function Profile() {
   const { user, updateUser } = useAuth(); const resource = useResource(signal => api.user(user.idUsuario, signal), [user.idUsuario]);
@@ -37,7 +37,7 @@ function ChangePassword({ onClose }) {
     try { const result = await api.changePassword(user.idUsuario, { passwordActual: body.passwordActual, nuevaPassword: body.nuevaPassword }); toast(result.mensaje + ' Inicia sesión nuevamente.'); await logout(); onClose(); }
     catch (err) { setError(err.message); } finally { setBusy(false); }
   }
-  return <Modal title="Cambiar contraseña" onClose={() => { if (!busy) onClose(); }}><ErrorBox message={error} /><form onSubmit={submit}><Password label="Contraseña actual" name="passwordActual" autoComplete="current-password" required /><Password label="Nueva contraseña" name="nuevaPassword" autoComplete="new-password" minLength={8} required /><Password label="Confirma la nueva contraseña" name="confirmacion" autoComplete="new-password" minLength={8} required /><div className="dialog-actions"><button className="btn btn-outline-secondary" type="button" disabled={busy} onClick={onClose}>Cancelar</button><Submit busy={busy} /></div></form></Modal>;
+  return <Modal title="Cambiar contraseña" onClose={() => { if (!busy) onClose(); }}><ErrorBox message={error} /><form onSubmit={submit}><Password label="Contraseña actual" name="passwordActual" autoComplete="current-password" required /><Password label="Nueva contraseña" name="nuevaPassword" autoComplete="new-password" minLength={8} pattern={STRONG_PASSWORD_PATTERN} title={STRONG_PASSWORD_HINT} hint={STRONG_PASSWORD_HINT} required /><Password label="Confirma la nueva contraseña" name="confirmacion" autoComplete="new-password" minLength={8} pattern={STRONG_PASSWORD_PATTERN} title={STRONG_PASSWORD_HINT} required /><div className="dialog-actions"><button className="btn btn-outline-secondary" type="button" disabled={busy} onClick={onClose}>Cancelar</button><Submit busy={busy} /></div></form></Modal>;
 }
 function Sessions({ onClose }) {
   const { user } = useAuth(); const resource = useResource(signal => api.sessions(user.idUsuario, signal), [user.idUsuario]);

@@ -20,9 +20,11 @@ export function Field({ label, children, hint }) {
 export function Input({ label, hint, ...props }) { return <Field label={label} hint={hint}>{id => <input className="form-control" id={id} {...props} />}</Field>; }
 export function Select({ label, children, ...props }) { return <Field label={label}>{id => <select className="form-select" id={id} {...props}>{children}</select>}</Field>; }
 export function Textarea({ label, ...props }) { return <Field label={label}>{id => <textarea className="form-control" rows={4} id={id} {...props} />}</Field>; }
-export function Password({ label = 'Contraseña', ...props }) {
+export const STRONG_PASSWORD_PATTERN = '(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9\\s]).{8,}';
+export const STRONG_PASSWORD_HINT = 'Mínimo 8 caracteres, incluyendo mayúscula, minúscula, número y carácter especial.';
+export function Password({ label = 'Contraseña', hint, ...props }) {
   const [visible, setVisible] = useState(false);
-  return <Field label={label}>{id => <div className="password-field"><input id={id} className="form-control" type={visible ? 'text' : 'password'} {...props} /><button type="button" aria-label={visible ? 'Ocultar contraseña' : 'Mostrar contraseña'} aria-pressed={visible} onClick={() => setVisible(value => !value)}><Icon name={visible ? 'eye-slash' : 'eye'} /></button></div>}</Field>;
+  return <Field label={label} hint={hint}>{id => <div className="password-field"><input id={id} className="form-control" type={visible ? 'text' : 'password'} {...props} /><button type="button" aria-label={visible ? 'Ocultar contraseña' : 'Mostrar contraseña'} aria-pressed={visible} onClick={() => setVisible(value => !value)}><Icon name={visible ? 'eye-slash' : 'eye'} /></button></div>}</Field>;
 }
 export function Submit({ busy, children = 'Guardar cambios', ...props }) { return <button type="submit" className="btn btn-primary" disabled={busy} {...props}>{busy ? <><span className="spinner-border spinner-border-sm" aria-hidden="true" /> Procesando…</> : children}</button>; }
 export function ErrorBox({ message, retry }) { return message ? <div className="alert alert-danger" role="alert"><Icon name="exclamation-circle" /> <span>{message}</span>{retry && <button className="btn btn-sm btn-outline-danger ms-auto" onClick={retry}>Reintentar</button>}</div> : null; }

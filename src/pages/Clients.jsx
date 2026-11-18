@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { api } from '../services/api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useResource } from '../hooks/useResource.js';
-import { Badge, Empty, ErrorBox, Icon, Input, Modal, PageHeading, Panel, Password, Resource, Select, Submit } from '../components/UI.jsx';
+import { Badge, Empty, ErrorBox, Icon, Input, Modal, PageHeading, Panel, Password, Resource, STRONG_PASSWORD_HINT, STRONG_PASSWORD_PATTERN, Select, Submit } from '../components/UI.jsx';
 
 export default function Clients() {
   const { user } = useAuth(); const editable = user.rol === 'ADMINISTRADOR';
@@ -52,7 +52,7 @@ function ClientForm({client,onClose,onSaved}) {
       <Input label="Correo del cliente" name="correo" type="email" defaultValue={client.correo || ''} maxLength={120} required />
       <Input label="Teléfono del contacto" name="telefono" defaultValue={client.telefono || ''} maxLength={20} />
       <Input label="Dirección" name="direccion" defaultValue={client.direccion || ''} maxLength={200} />
-      {!client.idCliente && <Password label="Contraseña inicial" name="password" minLength={8} autoComplete="new-password" required />}
+      {!client.idCliente && <Password label="Contraseña inicial" name="password" minLength={8} pattern={STRONG_PASSWORD_PATTERN} title={STRONG_PASSWORD_HINT} hint={STRONG_PASSWORD_HINT} autoComplete="new-password" required />}
       <p className="text-secondary">El correo se usa para iniciar sesión y recibir códigos de verificación. La activación de la cuenta se administra en Usuarios y roles.</p>
       <div className="dialog-actions"><button className="btn btn-outline-secondary" type="button" disabled={busy} onClick={onClose}>Cancelar</button><Submit busy={busy}>Guardar ficha</Submit></div>
     </form>
